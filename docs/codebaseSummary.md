@@ -1,114 +1,87 @@
-# Codebase Summary - nextFire Calculator
+# nextFire Calculator - Codebase Summary
 
 ## Key Components
 
-### 1. Project Structure
-```
-nextFire/
-├── src/
-│   ├── app/              # Next.js app router
-│   ├── components/       # React components
-│   │   ├── forms/       # Input forms
-│   │   ├── charts/      # Data visualization
-│   │   └── ui/          # shadcn/ui components
-│   ├── lib/             # Core utilities
-│   │   ├── simulation/  # Simulation engine
-│   │   ├── database/    # Prisma client
-│   │   └── utils/       # Helper functions
-│   └── types/           # TypeScript definitions
-├── prisma/              # Database schema
-├── public/              # Static assets
-└── tests/              # Test files
-```
+### Data Processing Layer
+- **Data Loader (`src/lib/database/dataLoader.ts`):** 
+  - Processes Shiller's historical market data
+  - Normalizes data for database storage
+  - Includes validation and error handling
+  - Supports CSV parsing with data integrity checks
 
-### 2. Core Components
-- **Database Layer:**
-  - Prisma client setup
-  - SQLite configuration
-  - Model definitions for scenarios and historical data
-- **Simulation Engine:**
-  - Historical simulation placeholder
-  - Type definitions for calculations
-  - Future Monte Carlo support
-- **UI Components:**
-  - Next.js app router setup
-  - shadcn/ui integration
-  - Responsive layout structure
+### Simulation Engine
+- **Historical Simulation (`src/lib/simulation/historical.ts`):**
+  - Implements cycle-based portfolio simulations
+  - Supports multiple withdrawal strategies:
+    - Fixed withdrawals
+    - Variable spending
+    - Percentage of portfolio
+    - VPW (Variable Percentage Withdrawal)
+  - Handles asset allocation and rebalancing
+  - Includes inflation adjustments
+
+### Database Layer
+- **Prisma ORM Integration (`src/lib/database/prisma.ts`):**
+  - Singleton pattern for database connections
+  - Development logging configuration
+  - Type-safe database operations
+
+### Testing Infrastructure
+- Jest with TypeScript support
+- Comprehensive test coverage for:
+  - Data processing functions
+  - Simulation calculations
+  - Database operations
+  - Error handling scenarios
 
 ## Data Flow
+1. Historical data is loaded and processed through dataLoader
+2. Processed data is stored in SQLite via Prisma
+3. Simulation engine fetches data for calculations
+4. Results are computed and returned for visualization
 
-### 1. User Input Flow
-```
-User Input -> Form Components -> Validation -> 
-Simulation Engine -> Database Storage -> 
-Results Calculation -> Visualization
-```
-
-### 2. Database Operations
-```
-Historical Data -> SQLite -> 
-Prisma Client -> Simulation Engine -> 
-Results Storage -> User Interface
-```
-
-## External Dependencies
-
-### 1. Core Dependencies
-- Next.js 14+
-- React 18+
-- TypeScript 5+
-- Prisma ORM
-- shadcn/ui
-- Tailwind CSS
-- next-themes
-
-### 2. Development Dependencies
-- ESLint
-- TypeScript compiler
-- Prisma CLI
-- Testing frameworks (planned)
+## Dependencies
+- Next.js 15.1.6
+- Prisma 6.3.1 with SQLite
+- CSV parsing utilities
+- Jest testing framework
+- TypeScript with strict mode
 
 ## Recent Changes
+- Implementation of historical data processing
+- Addition of simulation engine with withdrawal strategies
+- Setup of testing infrastructure
+- Database schema implementation
 
-### 1. Initial Setup
-- Project initialization with Next.js
-- Database schema design
-- Basic UI structure
-- Component organization
+## Code Organization
+```
+src/
+  ├── lib/
+  │   ├── database/
+  │   │   ├── prisma.ts      # Database client
+  │   │   └── dataLoader.ts  # Data processing
+  │   └── simulation/
+  │       └── historical.ts  # Simulation logic
+  └── types/                 # TypeScript definitions
+tests/
+  └── unit/
+      ├── database/         # Data processing tests
+      └── simulation/       # Simulation logic tests
+```
 
-### 2. Infrastructure
-- Prisma integration
-- shadcn/ui setup
-- Project structure creation
-- TypeScript configuration
+## Development Guidelines
+1. Maintain strict TypeScript types
+2. Add tests for new functionality
+3. Follow modular code organization
+4. Document significant changes
 
-## Active Development Areas
-
-### 1. Current Focus
-- Historical data integration
-- Basic simulation engine
-- Form components
-- Data visualization
-
-### 2. Planned Features
-- Monte Carlo simulations
-- Advanced withdrawal strategies
-- Scenario management
-- Data export capabilities
+## Next Steps
+1. Implement Shiller dataset download functionality
+2. Develop financial input form components
+3. Add visualization components
+4. Set up continuous integration
 
 ## User Feedback Integration
-- No user feedback yet - initial development phase
+- TBD - Awaiting initial user testing phase
 
-## Related Documentation
-- [Project Roadmap](projectRoadmap.md)
-- [Current Task](currentTask.md)
-- [Technical Stack](architecture/tech-stack.md)
-- [Development Guide](development/README.md)
-
-## Notes for Developers
-1. Run `npm install` to install dependencies
-2. Set up `.env` file with DATABASE_URL
-3. Run Prisma migrations with `npx prisma migrate dev`
-4. Start development server with `npm run dev`
-
-Remember: This is a living document. Update it as the codebase evolves to maintain accurate documentation of the system's current state.
+Remember: This is a living document that should be updated as the project evolves.
