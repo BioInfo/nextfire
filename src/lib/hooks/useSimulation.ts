@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { SimulationEngine } from '@/lib/simulation/engine';
 import type { SimulationResult } from '@/lib/simulation/types';
 import { usePortfolioStore } from '@/lib/stores/portfolioStore';
 import { useWithdrawalStore } from '@/lib/stores/withdrawalStore';
@@ -24,14 +23,25 @@ export function useSimulation() {
     setError(null);
 
     try {
-      const engine = new SimulationEngine();
-      const result = await engine.runSimulation({
-        portfolio,
-        withdrawalStrategy: strategy,
-        simulationType: 'historical-cycles',
-        duration: 30, // 30-year retirement period
+      const response = await fetch('/api/simulation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          portfolio,
+          withdrawalStrategy: strategy,
+          simulationType: 'historical-cycles',
+          duration: 30, // 30-year retirement period
+        }),
       });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to run simulation');
+      }
+
+      const result = await response.json();
       setResult(result);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to run simulation');
