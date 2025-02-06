@@ -1,235 +1,153 @@
 # Technical Stack - nextFire Calculator
 
-## Overview
-This document details the technical stack used in the nextFire Calculator, a modern FIRE planning tool built with Next.js. The stack emphasizes local-first architecture, type safety, and high-performance financial calculations.
-
-## Frontend Technologies
+## Frontend Tools
 
 ### Core Framework
-- **Next.js**
-  - React-based framework
-  - Server-side rendering capabilities
-  - API routes for local calculations
-  - File-system based routing
-  - TypeScript support
+- **Next.js v14+**
+  - App Router for modern routing
+  - React Server Components support
+  - Built-in TypeScript support
+  - Optimized build system
 
 ### UI Components & Styling
 - **shadcn/ui**
   - Modern, accessible component library
-  - Customizable design system
-  - Built on Radix UI primitives
-  - Consistent theming
-
+  - Customizable with Tailwind CSS
+  - Dark mode support via next-themes
 - **Tailwind CSS**
   - Utility-first CSS framework
   - Responsive design utilities
-  - Custom design token integration
-  - JIT (Just-In-Time) compilation
+  - Custom design system integration
 
-### Data Visualization
-- **Primary: Recharts**
-  - React-based charting library
-  - Responsive charts
-  - Customizable components
-  - Smooth animations
-  - TypeScript support
+### Data Visualization (Planned)
+- **Recharts/D3.js**
+  - Interactive charts and graphs
+  - Custom visualization components
+  - Responsive data displays
 
-- **Alternative Options:**
-  - **D3.js** for custom visualizations
-  - **Plotly.js** for complex financial charts
-
-## Backend Technologies
+## Backend Tools
 
 ### Database
 - **SQLite**
-  - Local-first database
-  - ACID compliance
-  - Simple deployment
-  - No server required
+  - Local-first architecture
+  - Fast querying capabilities
+  - Simple deployment and maintenance
+  - No external dependencies
 
 ### ORM
 - **Prisma**
   - Type-safe database access
-  - Schema management
-  - Migration system
+  - Auto-generated TypeScript types
+  - Migration management
   - Query optimization
 
 ### API Layer
 - **Next.js API Routes**
-  - Local API endpoints
-  - TypeScript support
-  - Request validation
-  - Error handling
+  - Serverless function support
+  - TypeScript integration
+  - Route handlers for data access
+  - Error boundary handling
 
 ## Development Tools
 
-### Core Tools
+### Code Quality
 - **TypeScript**
-  - Static type checking
+  - Strict type checking
   - Enhanced IDE support
-  - Type-safe development
-  - Better code organization
-
-- **ESLint & Prettier**
+  - Better code maintainability
+- **ESLint**
   - Code style enforcement
-  - Automatic formatting
-  - Best practices validation
+  - Error prevention
+- **Prettier**
+  - Consistent code formatting
 
-### Testing Framework
+### Testing (Planned)
 - **Jest**
-  - Unit testing
-  - Snapshot testing
-  - Code coverage
-
+  - Unit testing framework
+  - Integration testing
 - **React Testing Library**
   - Component testing
   - User interaction testing
-  - Accessibility testing
 
-- **Cypress**
-  - End-to-end testing
-  - Component testing
-  - Visual regression testing
+## Architectural Decisions
 
-### Development Environment
-- **Node.js**
-  - Runtime environment
-  - Package management
-  - Script execution
+### 1. Local-First Architecture
+- **Rationale:** Privacy and data ownership
+- **Implementation:** SQLite for local storage
+- **Benefits:** 
+  - No server infrastructure needed
+  - Complete data privacy
+  - Offline capability
 
-- **npm/yarn**
-  - Dependency management
-  - Script running
-  - Package versioning
+### 2. Server Components
+- **Usage:** Leverage React Server Components where possible
+- **Benefits:**
+  - Reduced client-side JavaScript
+  - Improved performance
+  - Better SEO potential
 
-## Project Structure
-```
-nextFire/
-├── src/
-│   ├── app/              # Next.js app directory
-│   ├── components/       # React components
-│   ├── lib/             # Utility functions
-│   ├── styles/          # Global styles
-│   └── types/           # TypeScript types
-├── prisma/              # Database schema
-├── public/             # Static assets
-└── tests/              # Test files
-```
+### 3. Component Architecture
+- **Pattern:** Atomic design principles
+- **Structure:**
+  - UI components (atoms)
+  - Form components (molecules)
+  - Feature components (organisms)
+  - Page layouts (templates)
 
-## Key Dependencies
+### 4. State Management
+- **Approach:** React hooks and context
+- **Rationale:** 
+  - Simple, built-in solutions
+  - No external state library needed
+  - Clear data flow
 
-### Production Dependencies
-```json
-{
-  "dependencies": {
-    "next": "^14.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "@prisma/client": "^5.0.0",
-    "recharts": "^2.9.0",
-    "tailwindcss": "^3.3.0",
-    "class-variance-authority": "^0.7.0",
-    "clsx": "^2.0.0",
-    "tailwind-merge": "^2.0.0"
-  }
-}
-```
-
-### Development Dependencies
-```json
-{
-  "devDependencies": {
-    "typescript": "^5.0.0",
-    "@types/node": "^20.0.0",
-    "@types/react": "^18.2.0",
-    "prisma": "^5.0.0",
-    "jest": "^29.0.0",
-    "@testing-library/react": "^14.0.0",
-    "cypress": "^13.0.0",
-    "eslint": "^8.0.0",
-    "prettier": "^3.0.0"
-  }
-}
-```
-
-## Technology Decisions
-
-### Why Next.js?
-- **Server-side Rendering:** Improved initial load performance
-- **API Routes:** Simplified backend implementation
-- **File-system Routing:** Intuitive page organization
-- **Built-in TypeScript Support:** Enhanced type safety
-- **Excellent Developer Experience:** Hot reloading, error handling
-
-### Why SQLite + Prisma?
-- **Local-first:** No server deployment needed
-- **Type Safety:** Prisma provides type-safe database access
-- **Simple Setup:** Minimal configuration required
-- **Reliable:** ACID compliance for data integrity
-- **Portable:** Single file database
-
-### Why shadcn/ui + Tailwind CSS?
-- **Modern Design:** Contemporary component library
-- **Accessibility:** Built-in accessibility features
-- **Customization:** Easy theming and styling
-- **Developer Experience:** Excellent documentation
-- **Performance:** Small bundle size
-
-### Why Recharts?
-- **React Integration:** Native React components
-- **Performance:** Efficient rendering
-- **Customization:** Flexible styling options
-- **TypeScript Support:** Type-safe props
-- **Active Community:** Regular updates and support
-
-## Development Workflow
-
-### 1. Local Development
-```bash
-# Install dependencies
-npm install
-
-# Initialize database
-npx prisma generate
-npx prisma db push
-
-# Start development server
-npm run dev
-```
-
-### 2. Testing
-```bash
-# Run unit tests
-npm test
-
-# Run E2E tests
-npm run cypress
-
-# Check types
-npm run type-check
-```
-
-### 3. Building
-```bash
-# Create production build
-npm run build
-
-# Start production server
-npm start
-```
+### 5. Database Schema
+- **Design:** Normalized structure
+- **Models:**
+  - UserScenarios
+  - HistoricalData
+  - SimulationResults
+- **Relationships:** Clear foreign key constraints
 
 ## Performance Considerations
 
-### Frontend
-- Code splitting
-- Image optimization
-- Component lazy loading
-- Memoization of calculations
+### 1. Data Loading
+- Efficient querying with Prisma
+- Pagination for large datasets
+- Caching strategies (planned)
 
-### Data Management
-- Efficient database queries
+### 2. Rendering
+- Server components for static content
+- Client components for interactivity
+- Optimized bundle sizes
+
+### 3. Calculations
+- Efficient simulation algorithms
+- Background processing for heavy calculations
 - Result caching
-- Batch operations
-- Progressive loading
 
-Remember: This tech stack is designed for a local-first application, prioritizing performance and user experience while maintaining simplicity in deployment and maintenance.
+## Security Measures
+
+### 1. Data Privacy
+- Local-only storage
+- No external data transmission
+- Secure data handling
+
+### 2. Input Validation
+- Strong type checking
+- Runtime validation
+- Error handling
+
+## Future Considerations
+
+### 1. Extensibility
+- Modular architecture for new features
+- Plugin system for calculations
+- Custom visualization support
+
+### 2. Scalability
+- Efficient data structures
+- Optimized algorithms
+- Resource management
+
+Remember: This technical stack is designed to provide a balance of modern development features while maintaining simplicity and user privacy. All choices are made with consideration for the project's specific requirements and constraints.
