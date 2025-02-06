@@ -22,28 +22,45 @@ interface ChartData {
 function prepareChartData(result: SimulationResult): ChartData[] {
   // For historical cycles, we'll show the median path
   if (result.type === 'historical-cycles') {
-    const yearCount = result.cycles[0].yearlyResults.length;
+    // Find the shortest cycle length to avoid index out of bounds
+    const minYearCount = Math.min(
+      ...result.cycles.map(cycle => cycle.yearlyResults.length)
+    );
     const data: ChartData[] = [];
 
-    for (let i = 0; i < yearCount; i++) {
+    for (let i = 0; i < minYearCount; i++) {
       // Get all balances for this year across cycles
-      const balances = result.cycles.map(
-        cycle => cycle.yearlyResults[i].endingBalance
-      );
-      const withdrawals = result.cycles.map(
-        cycle => cycle.yearlyResults[i].withdrawal
-      );
+      const yearData = result.cycles
+        .filter(cycle => i < cycle.yearlyResults.length)
+        .map(cycle => ({
+          balance: cycle.yearlyResults[i].endingBalance,
+          withdrawal: cycle.yearlyResults[i].withdrawal,
+          year: cycle.yearlyResults[i].year
+        }));
+
+      if (yearData.length === 0) continue;
 
       // Calculate median balance and withdrawal
-      const sortedBalances = [...balances].sort((a, b) => a - b);
-      const sortedWithdrawals = [...withdrawals].sort((a, b) => a - b);
-      const medianBalance =
-        sortedBalances[Math.floor(sortedBalances.length / 2)];
-      const medianWithdrawal =
-        sortedWithdrawals[Math.floor(sortedWithdrawals.length / 2)];
+      const sortedBalances = yearData
+        .map(d => d.balance)
+        .sort((a, b) => a - b);
+      const sortedWithdrawals = yearData
+        .map(d => d.withdrawal)
+        .sort((a, b) => a - b);
+
+      const medianBalance = sortedBalances[Math.floor(sortedBalances.length / 2)];
+      const medianWithdrawal = sortedWithdrawals[Math.floor(sortedWithdrawals.length / 2)];
+
+      // Use the most common year for this index
+      const yearCounts = new Map<number, number>();
+      yearData.forEach(d => {
+        yearCounts.set(d.year, (yearCounts.get(d.year) || 0) + 1);
+      });
+      const mostCommonYear = Array.from(yearCounts.entries())
+        .reduce((a, b) => a[1] > b[1] ? a : b)[0];
 
       data.push({
-        year: result.cycles[0].yearlyResults[i].year,
+        year: mostCommonYear,
         balance: medianBalance,
         withdrawal: medianWithdrawal,
       });
@@ -72,7 +89,37 @@ interface SimulationChartProps {
 }
 
 export function SimulationChart({ result }: SimulationChartProps) {
+  if (!result || !result.cycles || result.cycles.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Portfolio Balance Over Time</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[400px] w-full flex items-center justify-center text-gray-500">
+            No simulation data available
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   const data = prepareChartData(result);
+
+  if (data.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Portfolio Balance Over Time</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[400px] w-full flex items-center justify-center text-gray-500">
+            Unable to prepare chart data
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { WithdrawalStrategy } from '@/lib/simulation/types';
+import type { WithdrawalStrategy } from '@/lib/simulation/strategies/types';
 
 interface WithdrawalStore {
   strategy: WithdrawalStrategy | null;

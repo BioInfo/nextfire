@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/database/prisma';
 import type { PrismaClient } from '@prisma/client';
 import type { Portfolio, SimulationParams, SimulationResult, WithdrawalStrategy, YearlyResult, CycleResult } from './types';
+import { calculateWithdrawal } from './strategies/implementations';
 
 export class SimulationEngine {
   private db: typeof prisma;
@@ -31,15 +32,18 @@ export class SimulationEngine {
   private calculateWithdrawal(
     strategy: WithdrawalStrategy,
     balance: number,
-    inflationAdjustment: number
+    inflationAdjustment: number,
+    previousWithdrawal: number = 0,
+    portfolioReturn: number = 0,
+    initialBalance: number = balance
   ): number {
-    if (strategy.type === 'fixed') {
-      return strategy.adjustForInflation 
-        ? strategy.amount * inflationAdjustment 
-        : strategy.amount;
-    } else {
-      return (balance * strategy.amount) / 100;
-    }
+    return calculateWithdrawal(strategy, {
+      currentBalance: balance,
+      initialBalance,
+      previousWithdrawal,
+      inflationAdjustment,
+      portfolioReturn,
+    });
   }
 
   private calculateReturn(
@@ -49,9 +53,16 @@ export class SimulationEngine {
     stockReturn: number,
     bondReturn: number
   ): number {
-    const stockContribution = balance * (stockAllocation / 100) * (1 + (stockReturn / 100));
-    const bondContribution = balance * (bondAllocation / 100) * (1 + (bondReturn / 100));
-    return stockContribution + bondContribution;
+    // Calculate weighted returns
+    const stockWeight = stockAllocation / 100;
+    const bondWeight = bondAllocation / 100;
+    const totalReturn = (
+      stockReturn * stockWeight +
+      bondReturn * bondWeight
+    ) / 100; // Convert to decimal
+    
+    // Apply return to balance
+    return balance * (1 + totalReturn);
   }
 
   private async runSingleCycle(params: SimulationParams, historicalData: any[]): Promise<CycleResult> {
@@ -61,13 +72,23 @@ export class SimulationEngine {
     let lowestBalance = currentBalance;
     let highestBalance = currentBalance;
     let totalReturn = 0;
+    let previousWithdrawal = 0;
 
     for (const yearData of historicalData) {
+      // Calculate portfolio return first
+      const portfolioReturn = (
+        yearData.equityNominal * (params.portfolio.stockAllocation / 100) +
+        yearData.bondNominal * (params.portfolio.bondAllocation / 100)
+      ) / 100; // Convert to decimal
+
       // Calculate withdrawal for the year
       const withdrawal = this.calculateWithdrawal(
         params.withdrawalStrategy,
         currentBalance,
-        inflationAdjustment
+        inflationAdjustment,
+        previousWithdrawal,
+        portfolioReturn,
+        params.portfolio.initialBalance
       );
 
       // Apply withdrawal
@@ -104,8 +125,9 @@ export class SimulationEngine {
         inflationRate: yearData.inflationRate
       });
 
-      // Update balance for next year
+      // Update balance and withdrawal for next year
       currentBalance = endingBalance;
+      previousWithdrawal = withdrawal;
 
       // Check for portfolio failure
       if (currentBalance <= 0) {

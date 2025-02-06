@@ -26,7 +26,19 @@
   - [x] Data validation and filtering
 
 ### Phase 2: Advanced Calculations & Data Management
+- [ ] Enhanced Historical Data Integration
+  - [ ] Incorporate Shiller data from Yale (1871-present)
+  - [ ] Merge FRED and Shiller datasets for comprehensive coverage
+  - [ ] Validate and reconcile data from multiple sources
+  - [ ] Implement data quality checks and anomaly detection
 - [ ] Monte Carlo projections
+  - [ ] Forward-looking simulations from current date
+  - [ ] Customizable market assumptions
+  - [ ] Multiple projection methods (e.g., bootstrap, parametric)
+- [ ] Historical simulation enhancements
+  - [ ] User-selectable historical periods
+  - [ ] Overlaid historical cycles visualization
+  - [ ] Comparative period analysis
 - [ ] Variable spending strategies
 - [ ] Custom income/expense streams
 - [ ] Tax calculations and modeling

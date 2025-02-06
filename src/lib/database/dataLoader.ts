@@ -41,7 +41,10 @@ async function fetchFREDSeries(series: string, startDate: string = '1871-01-01',
   url.searchParams.append('file_type', 'json');
   url.searchParams.append('observation_start', startDate);
   url.searchParams.append('frequency', frequency);
-  url.searchParams.append('units', 'pc1'); // Percent change from year ago
+  // Only use percent change for CPI
+  if (series === 'CPIAUCSL') {
+    url.searchParams.append('units', 'pc1'); // Percent change from year ago
+  }
   
   interface FREDObservation {
     date: string;
@@ -81,43 +84,93 @@ async function processHistoricalData(): Promise<ProcessedData[]> {
   try {
     console.log('Fetching data from FRED API...');
     
-    // Fetch required data series
-    const [sp500, cpi, bonds] = await Promise.all([
-      fetchFREDSeries('SP500'),          // S&P 500
-      fetchFREDSeries('CPIAUCSL'),       // Consumer Price Index
-      fetchFREDSeries('GS10')            // 10-Year Treasury Rate
+    // Fetch required data series with specific date range
+    const [equityData, cpiData, bondData] = await Promise.all([
+      fetchFREDSeries('SP500', '1947-01-01', 'm'),     // S&P 500 Index
+      fetchFREDSeries('CPIAUCSL', '1947-01-01', 'm'),  // Consumer Price Index
+      fetchFREDSeries('GS10', '1947-01-01', 'm')       // 10-Year Treasury Rate
     ]);
 
-    console.log(`Fetched ${sp500.length} SP500 records, ${cpi.length} CPI records, ${bonds.length} bond records`);
+    // Process monthly data to yearly by taking last value of each year
+    function getYearlyData(monthlyData: FREDData[]): FREDData[] {
+      const yearlyMap = new Map<number, FREDData>();
+      monthlyData
+        .filter(d => d.value > 0)
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        .forEach(d => {
+          const year = new Date(d.date).getFullYear();
+          yearlyMap.set(year, d);
+        });
+      return Array.from(yearlyMap.values());
+    }
+
+    // Convert to yearly data
+    const equity = getYearlyData(equityData);
+    const cpi = getYearlyData(cpiData);
+    const bonds = getYearlyData(bondData);
+
+    console.log(`Processing ${equity.length} equity records, ${cpi.length} CPI records, ${bonds.length} bond records`);
 
     // Process data by year
     const yearlyData = new Map<number, ProcessedData>();
 
-    // Process CPI data first to calculate inflation rates
-    for (const point of cpi) {
-      const year = new Date(point.date).getFullYear();
+    // Create a sorted array of unique years from all data sources
+    const years = [...new Set([...equity, ...cpi, ...bonds].map(d => new Date(d.date).getFullYear()))].sort();
+
+    // Initialize data for all years
+    years.forEach(year => {
       yearlyData.set(year, {
         year,
         equityNominal: 0,
         equityReal: 0,
         bondNominal: 0,
         bondReal: 0,
-        inflationRate: point.value // CPI percent change from year ago
+        inflationRate: 0
       });
-    }
+    });
 
-    // Process S&P 500 data
-    for (const point of sp500) {
+    // Process CPI data first to calculate inflation rates
+    const sortedCPI = cpi.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    for (let i = 0; i < sortedCPI.length; i++) {
+      const point = sortedCPI[i];
       const year = new Date(point.date).getFullYear();
       const data = yearlyData.get(year);
+      
       if (data) {
-        data.equityNominal = point.value; // SP500 percent change from year ago
-        data.equityReal = data.equityNominal - data.inflationRate;
+        // CPI data comes as percent change from year ago
+        data.inflationRate = point.value;
       }
     }
 
-    // Process bond data
-    for (const point of bonds) {
+    // Process equity data to calculate year-over-year returns
+    let lastYearValue: number | null = null;
+
+    for (let i = 0; i < equity.length; i++) {
+      const point = equity[i];
+      const year = new Date(point.date).getFullYear();
+      const data = yearlyData.get(year);
+      
+      if (data) {
+        if (i > 0) {
+          const previousValue = equity[i - 1].value;
+          if (previousValue > 0) {
+            // Calculate year-over-year return as percentage change
+            const yearReturn = ((point.value - previousValue) / previousValue) * 100;
+            // Cap extreme values
+            data.equityNominal = Math.max(Math.min(yearReturn, 50), -30);
+            data.equityReal = data.equityNominal - data.inflationRate;
+          }
+        } else {
+          // For the first year with data
+          data.equityNominal = 8.0; // Historical average nominal return
+          data.equityReal = data.equityNominal - data.inflationRate;
+        }
+      }
+    }
+
+    // Process bond data - use yields as total returns
+    const sortedBonds = bonds.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    for (const point of sortedBonds) {
       const year = new Date(point.date).getFullYear();
       const data = yearlyData.get(year);
       if (data) {
