@@ -1,0 +1,43 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model UserScenario {
+  id            String             @id @default(cuid())
+  scenarioName  String
+  inputData     String             // JSON string of simulation parameters
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  simulations   SimulationResult[]
+}
+
+model HistoricalData {
+  id            Int      @id @default(autoincrement())
+  year          Int      @unique
+  equityNominal Float    // Nominal return for equities
+  equityReal    Float    // Real return for equities
+  bondNominal   Float    // Nominal yield for bonds
+  bondReal      Float    // Real yield for bonds
+  inflationRate Float    // Annual inflation rate
+  goldReturn    Float?   // Optional gold returns
+  cashReturn    Float?   // Optional cash returns
+}
+
+model SimulationResult {
+  id             String        @id @default(cuid())
+  scenario       UserScenario  @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+  scenarioId     String
+  simulationType String        // "historical", "monteCarlo", or "fixedRate"
+  resultData     String        // JSON string of simulation results
+  generatedAt    DateTime      @default(now())
+
+  @@index([scenarioId])
+}
