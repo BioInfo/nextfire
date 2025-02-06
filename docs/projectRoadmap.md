@@ -14,8 +14,9 @@
 - [ ] Historical cycle simulations (1871-present)
 - [ ] Portfolio value and asset allocation inputs
 - [ ] Basic withdrawal strategies implementation
-- [ ] SQLite database integration with Prisma
+- [x] SQLite database integration with Prisma
 - [x] Initial UI components with shadcn/ui
+- [x] Historical data integration with FRED API
 
 ### Phase 2: Advanced Calculations & Data Management
 - [ ] Monte Carlo projections
