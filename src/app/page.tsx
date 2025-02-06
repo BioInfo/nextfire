@@ -1,11 +1,19 @@
-import { PortfolioContainer } from '@/components/portfolio/portfolio-container';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 export default function Home() {
   return (
-    <main className="min-h-screen p-8">
-      <div className="container mx-auto max-w-6xl">
-        <h1 className="mb-8 text-4xl font-bold">nextFire Calculator</h1>
-        <PortfolioContainer />
+    <main className="min-h-screen flex flex-col items-center justify-center p-8">
+      <div className="text-center space-y-6">
+        <h1 className="text-4xl font-bold">nextFire Calculator</h1>
+        <p className="text-xl text-muted-foreground">
+          Test your retirement portfolio with historical market data
+        </p>
+        <Link href="/simulation">
+          <Button size="lg" className="mt-4">
+            Start Simulation
+          </Button>
+        </Link>
       </div>
     </main>
   );
