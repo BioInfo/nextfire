@@ -1,29 +1,47 @@
-import fs from 'fs/promises';
-import path from 'path';
 import { prisma } from './prisma';
 import axios from 'axios';
 
+/**
+ * Represents a single data point from FRED API
+ */
 interface FREDData {
   date: string;        // Date in YYYY-MM-DD format
   value: number;       // Value for the series
 }
 
+/**
+ * Represents processed yearly financial data
+ */
 interface ProcessedData {
-  year: number;
-  equityNominal: number;
-  equityReal: number;
-  bondNominal: number;
-  bondReal: number;
-  inflationRate: number;
+  year: number;          // Calendar year
+  equityNominal: number; // S&P 500 nominal return (%)
+  equityReal: number;    // S&P 500 real return (%)
+  bondNominal: number;   // 10-year Treasury nominal yield (%)
+  bondReal: number;      // 10-year Treasury real yield (%)
+  inflationRate: number; // Annual inflation rate (%)
 }
 
-async function fetchFREDSeries(series: string): Promise<FREDData[]> {
+/**
+ * Fetches time series data from FRED API
+ * @param series - FRED series ID (e.g., 'SP500', 'CPIAUCSL', 'GS10')
+ * @param startDate - Start date in YYYY-MM-DD format
+ * @param frequency - Data frequency (e.g., 'a' for annual)
+ * @returns Array of date-value pairs
+ * @throws Error if API key is missing or request fails
+ */
+async function fetchFREDSeries(series: string, startDate: string = '1871-01-01', frequency: string = 'a'): Promise<FREDData[]> {
   const FRED_API_KEY = process.env.FRED_API_KEY;
   if (!FRED_API_KEY) {
     throw new Error('FRED_API_KEY environment variable is required');
   }
 
-  const url = `https://api.stlouisfed.org/fred/series/observations?series_id=${series}&api_key=${FRED_API_KEY}&file_type=json`;
+  const url = new URL('https://api.stlouisfed.org/fred/series/observations');
+  url.searchParams.append('series_id', series);
+  url.searchParams.append('api_key', FRED_API_KEY);
+  url.searchParams.append('file_type', 'json');
+  url.searchParams.append('observation_start', startDate);
+  url.searchParams.append('frequency', frequency);
+  url.searchParams.append('units', 'pc1'); // Percent change from year ago
   
   interface FREDObservation {
     date: string;
@@ -31,251 +49,141 @@ async function fetchFREDSeries(series: string): Promise<FREDData[]> {
   }
 
   try {
-    const response = await axios.get<{ observations: FREDObservation[] }>(url);
-    return response.data.observations.map((obs) => ({
-      date: obs.date,
-      value: parseFloat(obs.value)
-    }));
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw new Error(`Failed to fetch FRED data for ${series}: ${error.message}`);
-    }
-    throw error;
-  }
-}
-
-export async function downloadShillerData(): Promise<string> {
-  const SHILLER_URL = 'http://www.econ.yale.edu/~shiller/data/ie_data.xls';
-  const DATA_DIR = path.join(process.cwd(), 'data');
-  const XLS_PATH = path.join(DATA_DIR, 'shiller_data.xls');
-  const CSV_PATH = path.join(DATA_DIR, 'shiller_data.csv');
-
-  try {
-    // Create data directory if it doesn't exist
-    await fs.mkdir(DATA_DIR, { recursive: true });
-
-    // Download XLS file
-    console.log('Downloading Shiller data...');
-    const response = await axios.get(SHILLER_URL, {
-      responseType: 'arraybuffer',
-      timeout: 10000 // 10 second timeout
+    const response = await axios.get<{ observations: FREDObservation[] }>(url.toString(), {
+      timeout: 10000, // 10 second timeout
+      validateStatus: (status) => status === 200 // Only accept 200 OK
     });
 
-    // Save XLS file
-    await fs.writeFile(XLS_PATH, response.data);
-    console.log('Downloaded XLS file successfully');
-
-    // Convert XLS to CSV
-    console.log('Converting XLS to CSV...');
-    const workbook = XLSX.read(response.data);
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    
-    // Get worksheet range
-    const range = XLSX.utils.decode_range(worksheet['!ref'] || 'A1');
-    
-    console.log('\nScanning worksheet cells:');
-    let headerRowIndex = -1;
-    let headers: string[] = [];
-    
-    // Scan through first column (A) looking for "Date" cell
-    // Search deeper in the file (up to row 50) to find the actual data headers
-    for (let r = range.s.r; r <= Math.min(range.e.r, 50); r++) {
-      const cellAddress = XLSX.utils.encode_cell({ r, c: 0 });
-      const cell = worksheet[cellAddress];
-      
-      if (cell) {
-        const cellValue = cell.v?.toString() || '';
-        console.log(`Row ${r + 1}, Column A:`, cellValue);
-        
-        // Check for Date header with more flexible matching
-        // Look for a cell that contains a year in the format YYYY.MM
-        if (cellValue.match(/^\d{4}\.\d{2}/) || cellValue.match(/^(Date|Year)/i)) {
-          headerRowIndex = r;
-          console.log(`Found header row at index ${r}`);
-          
-          // Extract headers from this row
-          headers = [];
-          for (let c = 0; c <= range.e.c; c++) {
-            const headerCell = worksheet[XLSX.utils.encode_cell({ r, c })];
-            if (headerCell && headerCell.v) {
-              // Clean up header names
-              const headerName = headerCell.v.toString().trim();
-              if (headerName) {
-                headers.push(headerName);
-                console.log(`  Column ${String.fromCharCode(65 + c)}:`, headerName);
-              }
-            }
-          }
-          
-          // Verify we have the required headers
-          const requiredHeaders = ['Date', 'P', 'D', 'E', 'CPI', 'GS10'];
-          const hasRequiredHeaders = requiredHeaders.every(header => 
-            headers.some(h => h.includes(header)));
-          
-          if (hasRequiredHeaders) {
-            console.log('Found all required headers');
-            break;
-          } else {
-            console.log('Missing some required headers, continuing search...');
-            headerRowIndex = -1;
-            headers = [];
-          }
-        }
-      }
-    }
-    
-    if (headerRowIndex === -1) {
-      throw new Error('Could not find header row starting with "Date"');
-    }
-    
-    console.log('\nFound headers:', headers);
-    
-    // Extract data rows using the headers
-    const data: string[][] = [];
-    for (let r = headerRowIndex + 1; r <= range.e.r; r++) {
-      const row: string[] = [];
-      let hasData = false;
-      
-      for (let c = 0; c <= range.e.c; c++) {
-        const cell = worksheet[XLSX.utils.encode_cell({ r, c })];
-        const value = cell ? cell.v?.toString() || '' : '';
-        row.push(value);
-        if (value) hasData = true;
-      }
-      
-      if (hasData) {
-        data.push(row);
-      }
-    }
-    
-    // Convert to CSV
-    const csvContent = [
-      headers.join(','),
-      ...data.map(row => row.map(cell =>
-        cell ? `"${cell.replace(/"/g, '""')}"` : ''
-      ).join(','))
-    ].join('\n');
-
-    // Write CSV file
-    await fs.writeFile(CSV_PATH, csvContent);
-    console.log('Converted to CSV successfully');
-
-    // Clean up XLS file
-    await fs.unlink(XLS_PATH);
-
-    return CSV_PATH;
+    return response.data.observations
+      .filter(obs => obs.value !== '.') // Filter out missing values
+      .map((obs) => ({
+        date: obs.date,
+        value: parseFloat(obs.value)
+      }));
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      throw new Error(`Failed to download Shiller data: ${error.message}`);
+      if (error.response) {
+        throw new Error(`FRED API error for ${series}: ${error.response.status} - ${error.response.statusText}`);
+      } else if (error.request) {
+        throw new Error(`Network error fetching ${series}: ${error.message}`);
+      }
     }
-    throw new Error(`Error processing Shiller data: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(`Unexpected error fetching ${series}: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
+/**
+ * Processes raw FRED data into yearly financial metrics
+ * @returns Array of processed yearly data
+ * @throws Error if data processing fails
+ */
 async function processHistoricalData(): Promise<ProcessedData[]> {
-  // Fetch required data series from FRED
-  const [sp500, cpi, bonds] = await Promise.all([
-    fetchFREDSeries('SP500'),          // S&P 500
-    fetchFREDSeries('CPIAUCSL'),       // Consumer Price Index
-    fetchFREDSeries('GS10')            // 10-Year Treasury Rate
-  ]);
+  try {
+    console.log('Fetching data from FRED API...');
+    
+    // Fetch required data series
+    const [sp500, cpi, bonds] = await Promise.all([
+      fetchFREDSeries('SP500'),          // S&P 500
+      fetchFREDSeries('CPIAUCSL'),       // Consumer Price Index
+      fetchFREDSeries('GS10')            // 10-Year Treasury Rate
+    ]);
 
-  // Process data by year
-  const yearlyData = new Map<number, ProcessedData>();
-  let prevCPI = null;
+    console.log(`Fetched ${sp500.length} SP500 records, ${cpi.length} CPI records, ${bonds.length} bond records`);
 
-  // Process CPI data first to calculate inflation rates
-  for (let i = 0; i < cpi.length; i++) {
-    const date = new Date(cpi[i].date);
-    const year = date.getFullYear();
-    const cpiValue = cpi[i].value;
+    // Process data by year
+    const yearlyData = new Map<number, ProcessedData>();
 
-    if (prevCPI !== null) {
-      const inflationRate = ((cpiValue - prevCPI) / prevCPI) * 100;
-      
+    // Process CPI data first to calculate inflation rates
+    for (const point of cpi) {
+      const year = new Date(point.date).getFullYear();
       yearlyData.set(year, {
         year,
         equityNominal: 0,
         equityReal: 0,
         bondNominal: 0,
         bondReal: 0,
-        inflationRate
+        inflationRate: point.value // CPI percent change from year ago
       });
     }
 
-    prevCPI = cpiValue;
-  }
-
-  // Process S&P 500 data
-  for (let i = 0; i < sp500.length - 1; i++) {
-    const date = new Date(sp500[i].date);
-    const year = date.getFullYear();
-    const data = yearlyData.get(year);
-
-    if (data) {
-      const currentPrice = sp500[i].value;
-      const nextPrice = sp500[i + 1].value;
-      
-      // Calculate nominal return (assuming 2% dividend yield as historical average)
-      const estimatedDividend = currentPrice * 0.02;
-      data.equityNominal = ((nextPrice - currentPrice + estimatedDividend) / currentPrice) * 100;
-      data.equityReal = data.equityNominal - data.inflationRate;
+    // Process S&P 500 data
+    for (const point of sp500) {
+      const year = new Date(point.date).getFullYear();
+      const data = yearlyData.get(year);
+      if (data) {
+        data.equityNominal = point.value; // SP500 percent change from year ago
+        data.equityReal = data.equityNominal - data.inflationRate;
+      }
     }
-  }
 
-  // Process bond data
-  for (const bond of bonds) {
-    const date = new Date(bond.date);
-    const year = date.getFullYear();
-    const data = yearlyData.get(year);
-
-    if (data) {
-      data.bondNominal = bond.value;
-      data.bondReal = bond.value - data.inflationRate;
+    // Process bond data
+    for (const point of bonds) {
+      const year = new Date(point.date).getFullYear();
+      const data = yearlyData.get(year);
+      if (data) {
+        data.bondNominal = point.value;
+        data.bondReal = data.bondNominal - data.inflationRate;
+      }
     }
+
+    // Convert map to array and sort by year
+    const processed = Array.from(yearlyData.values())
+      .filter(data => 
+        isFinite(data.equityNominal) && 
+        isFinite(data.equityReal) && 
+        isFinite(data.bondNominal) && 
+        isFinite(data.bondReal) && 
+        isFinite(data.inflationRate)
+      )
+      .sort((a, b) => a.year - b.year);
+
+    if (processed.length === 0) {
+      throw new Error('No valid data could be processed');
+    }
+
+    console.log(`Processed ${processed.length} years of data from ${processed[0].year} to ${processed[processed.length - 1].year}`);
+    return processed;
+  } catch (error) {
+    console.error('Error processing historical data:', error);
+    throw error;
   }
-
-  // Convert map to array and sort by year
-  const processed = Array.from(yearlyData.values())
-    .filter(data => 
-      isFinite(data.equityNominal) && 
-      isFinite(data.equityReal) && 
-      isFinite(data.bondNominal) && 
-      isFinite(data.bondReal) && 
-      isFinite(data.inflationRate)
-    )
-    .sort((a, b) => a.year - b.year);
-
-  if (processed.length === 0) {
-    throw new Error('No valid data could be processed');
-  }
-
-  return processed;
 }
 
+/**
+ * Loads historical financial data from FRED into the local database
+ * @throws Error if FRED_API_KEY is missing or data loading fails
+ */
 export async function loadHistoricalData(): Promise<void> {
   try {
-    console.log('Starting historical data load from FRED...');
-    
-    // Process data from FRED
+    // Check for required environment variables
+    if (!process.env.FRED_API_KEY) {
+      throw new Error('FRED_API_KEY environment variable is required');
+    }
+
+    console.log('Processing historical data from FRED...');
     const processedData = await processHistoricalData();
 
-    console.log(`Processed ${processedData.length} years of data`);
-
-    // Import to database
-    console.log('Importing to database...');
-    
-    // Clear existing data
-    await prisma.historicalData.deleteMany();
-
-    // Import new data
-    await prisma.historicalData.createMany({
-      data: processedData
+    // Batch insert/update data
+    console.log('Loading data into database...');
+    await prisma.$transaction(async (tx) => {
+      for (const data of processedData) {
+        await tx.historicalData.upsert({
+          where: { year: data.year },
+          create: data,
+          update: data
+        });
+      }
     });
 
-    console.log('Historical data import completed successfully');
+    const count = await prisma.historicalData.count();
+    const range = await prisma.historicalData.aggregate({
+      _min: { year: true },
+      _max: { year: true }
+    });
+
+    console.log(`Successfully loaded ${count} years of historical data (${range._min.year} to ${range._max.year})`);
   } catch (error) {
-    console.error('Error loading historical data:', error);
+    console.error('Error in loadHistoricalData:', error);
     throw error;
   }
 }

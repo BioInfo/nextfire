@@ -1,20 +1,31 @@
 import { prisma } from '@/lib/database/prisma';
+import type { PrismaClient } from '@prisma/client';
 import type { Portfolio, SimulationParams, SimulationResult, WithdrawalStrategy, YearlyResult } from './types';
 
 export class SimulationEngine {
-  private async getHistoricalData(startYear: number, duration: number) {
-    const endYear = startYear + duration;
-    return await prisma.historicalData.findMany({
-      where: {
+  private db: typeof prisma;
+
+  constructor(db: typeof prisma = prisma) {
+    this.db = db;
+  }
+  private async getHistoricalData(startYear?: number, duration?: number) {
+    const query: any = {
+      orderBy: {
+        year: 'asc'
+      }
+    };
+
+    if (startYear && duration) {
+      const endYear = startYear + duration;
+      query.where = {
         year: {
           gte: startYear,
           lt: endYear
         }
-      },
-      orderBy: {
-        year: 'asc'
-      }
-    });
+      };
+    }
+
+    return await this.db.historicalData.findMany(query);
   }
 
   private calculateWithdrawal(
@@ -43,12 +54,7 @@ export class SimulationEngine {
     return stockContribution + bondContribution;
   }
 
-  public async runSimulation(params: SimulationParams): Promise<SimulationResult> {
-    const historicalData = await this.getHistoricalData(params.startYear, params.duration);
-    if (historicalData.length < params.duration) {
-      throw new Error('Insufficient historical data for simulation duration');
-    }
-
+  private async runSingleCycle(params: SimulationParams, historicalData: any[]): Promise<CycleResult> {
     const yearlyResults: YearlyResult[] = [];
     let currentBalance = params.portfolio.initialBalance;
     let inflationAdjustment = 1;
@@ -104,6 +110,7 @@ export class SimulationEngine {
       // Check for portfolio failure
       if (currentBalance <= 0) {
         return {
+          startYear: historicalData[0].year,
           success: false,
           finalBalance: 0,
           yearlyResults,
@@ -115,6 +122,7 @@ export class SimulationEngine {
     }
 
     return {
+      startYear: historicalData[0].year,
       success: true,
       finalBalance: currentBalance,
       yearlyResults,
@@ -122,5 +130,62 @@ export class SimulationEngine {
       highestBalance,
       averageReturn: totalReturn / yearlyResults.length
     };
+  }
+
+  public async runSimulation(params: SimulationParams): Promise<SimulationResult> {
+    const allHistoricalData = await this.getHistoricalData();
+    
+    if (params.simulationType === 'single') {
+      if (!params.startYear) {
+        throw new Error('Start year is required for single simulation');
+      }
+
+      const cycleData = allHistoricalData
+        .filter(d => d.year >= params.startYear! && d.year < params.startYear! + params.duration);
+
+      if (cycleData.length < params.duration) {
+        throw new Error('Insufficient historical data for simulation duration');
+      }
+
+      const cycleResult = await this.runSingleCycle(params, cycleData);
+      return {
+        type: 'single',
+        cycles: [cycleResult]
+      };
+    } else {
+      // Historical cycles simulation
+      const cycles: CycleResult[] = [];
+      const minYear = Math.min(...allHistoricalData.map(d => d.year));
+      const maxYear = Math.max(...allHistoricalData.map(d => d.year)) - params.duration;
+
+      // Run simulation for each possible starting year
+      for (let startYear = minYear; startYear <= maxYear; startYear++) {
+        const cycleData = allHistoricalData
+          .filter(d => d.year >= startYear && d.year < startYear + params.duration);
+
+        if (cycleData.length === params.duration) {
+          const cycleResult = await this.runSingleCycle(params, cycleData);
+          cycles.push(cycleResult);
+        }
+      }
+
+      if (cycles.length === 0) {
+        throw new Error('No valid historical cycles found for simulation');
+      }
+
+      // Calculate aggregate statistics
+      const successRate = (cycles.filter(c => c.success).length / cycles.length) * 100;
+      const endingBalances = cycles.map(c => c.finalBalance).sort((a, b) => a - b);
+      const medianEndingBalance = endingBalances[Math.floor(endingBalances.length / 2)];
+
+      return {
+        type: 'historical-cycles',
+        cycles,
+        successRate,
+        medianEndingBalance,
+        worstCaseBalance: Math.min(...endingBalances),
+        bestCaseBalance: Math.max(...endingBalances)
+      };
+    }
   }
 }

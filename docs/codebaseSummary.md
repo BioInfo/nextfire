@@ -4,10 +4,14 @@
 
 ### Data Processing Layer
 - **Data Loader (`src/lib/database/dataLoader.ts`):** 
-  - Integrates with FRED API for historical market data
-  - Fetches S&P 500, CPI, and Treasury rates
-  - Includes error handling and rate limiting
-  - Processes and normalizes data for database storage
+  - Robust FRED API integration for historical market data
+  - Fetches annual percentage changes for:
+    - S&P 500 (equity returns)
+    - CPI (inflation rates)
+    - 10-Year Treasury (bond yields)
+  - Enhanced error handling with detailed error messages
+  - Transaction-safe database updates
+  - Comprehensive data validation and filtering
 
 ### Simulation Engine
 - **Historical Simulation (`src/lib/simulation/engine.ts` & `types.ts`):**
@@ -47,8 +51,13 @@
 - TypeScript with strict mode
 
 ## Recent Changes
-- Migration from Shiller dataset to FRED API
-- Implementation of historical cycle simulation engine
+- Enhanced FRED API integration:
+  - Switched to annual percentage changes for more accurate returns
+  - Added robust error handling and data validation
+  - Implemented transactional database updates
+  - Created comprehensive FRED data documentation
+- Added new documentation in `docs/FRED_DATA.md`
+- Improved data processing reliability and error reporting
 - Addition of comprehensive project documentation
 - Creation of simulation test infrastructure
 
