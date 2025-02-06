@@ -10,7 +10,8 @@
     "lint": "next lint",
     "test": "jest",
     "test:watch": "jest --watch",
-    "load-data": "tsx scripts/load-historical-data.ts"
+    "load-data": "tsx scripts/load-historical-data.ts",
+    "test-simulation": "tsx scripts/test-simulation.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.3.1",
