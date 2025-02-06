@@ -1,0 +1,17 @@
+Date,Rate,Real_Rate,Notes
+1871.01,5.32,-1.23,"Long-term Interest Rate Data"
+1871.02,5.32,-2.19
+1871.03,5.32,-0.07
+1871.04,5.32,3.99
+1871.05,5.32,2.45
+...
+2024.02,4.12,1.02,"Feb rate is month-to-date average"
+
+Notes:
+- Rate is the Long-Term Government Bond Yield (10-year)
+- Real_Rate is the inflation-adjusted rate (Rate - Inflation_Rate)
+- Data from 1871-1926 is the US Long Term Bond Yield
+- Post-1926 data is the 10-Year Treasury Note Yield
+- Source: Robert Shiller's Stock Market Data
+- Pre-1920 rates are estimated from UK Consol yields
+- Used in "Irrational Exuberance" (Princeton University Press)

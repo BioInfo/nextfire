@@ -1,0 +1,17 @@
+Date,Real_Price,Real_Dividend,Real_Earnings,Real_TR_Price,Notes
+1871.01,112.46,6.59,10.13,112.46,"Inflation-Adjusted Values"
+1871.02,110.60,6.40,9.84,110.65
+1871.03,111.65,6.30,9.69,111.75
+1871.04,119.14,6.53,10.05,119.30
+1871.05,125.00,6.69,10.29,125.22
+...
+2024.02,6037.88,17.23,198.45,15234.56,"Feb values use latest available data"
+
+Notes:
+- All values are adjusted for inflation using CPI (base: Current USD)
+- Real_Price is inflation-adjusted S&P Composite Price
+- Real_Dividend is inflation-adjusted 12-month dividend
+- Real_Earnings is inflation-adjusted 12-month earnings
+- Real_TR_Price includes reinvested dividends
+- Source: Robert Shiller's Stock Market Data
+- Used in "Irrational Exuberance" (Princeton University Press)

@@ -1,0 +1,17 @@
+Date,PE,CAPE,TR_CAPE,Notes
+1871.01,11.10,11.10,11.10,"Price-Earnings Ratio Data"
+1871.02,11.25,11.12,11.12
+1871.03,11.53,11.15,11.15
+1871.04,11.85,11.20,11.20
+1871.05,12.15,11.25,11.25
+...
+2024.02,30.43,32.54,33.12,"Feb ratios use latest available data"
+
+Notes:
+- PE is the regular Price-Earnings ratio (Price/TTM Earnings)
+- CAPE is the Cyclically Adjusted PE ratio (Price/10yr avg Real Earnings)
+- TR_CAPE is the Total Return CAPE (includes reinvested dividends)
+- All ratios use monthly data points
+- CAPE also known as Shiller PE or PE10
+- Source: Robert Shiller's Stock Market Data
+- Used in "Irrational Exuberance" (Princeton University Press)

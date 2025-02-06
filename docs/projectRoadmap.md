@@ -10,56 +10,107 @@
 
 ## Key Features & Milestones
 
-### Phase 1: Core Simulation Engine
+### Phase 1: Core Simulation Engine & Data Infrastructure
 - [x] Historical cycle simulations (1947-present)
   - [x] Single cycle simulation
   - [x] Multiple cycle analysis
   - [x] Success rate calculation
   - [x] Portfolio statistics
-- [ ] Portfolio value and asset allocation inputs
-- [ ] Basic withdrawal strategies implementation
 - [x] SQLite database integration with Prisma
 - [x] Initial UI components with shadcn/ui
-- [x] Historical data integration with FRED API
+- [x] FRED API Integration
   - [x] Annual returns data pipeline
   - [x] Robust error handling
   - [x] Data validation and filtering
+- [ ] Portfolio Management
+  - [x] Basic value input
+  - [x] Asset allocation controls
+  - [x] Input validation
+  - [ ] Advanced allocation options
+  - [ ] State persistence
 
-### Phase 2: Advanced Calculations & Data Management
-- [ ] Enhanced Historical Data Integration
-  - [ ] Incorporate Shiller data from Yale (1871-present)
-  - [ ] Merge FRED and Shiller datasets for comprehensive coverage
-  - [ ] Validate and reconcile data from multiple sources
-  - [ ] Implement data quality checks and anomaly detection
-- [ ] Monte Carlo projections
-  - [ ] Forward-looking simulations from current date
-  - [ ] Customizable market assumptions
-  - [ ] Multiple projection methods (e.g., bootstrap, parametric)
-- [ ] Historical simulation enhancements
-  - [ ] User-selectable historical periods
-  - [ ] Overlaid historical cycles visualization
-  - [ ] Comparative period analysis
-- [ ] Variable spending strategies
-- [ ] Custom income/expense streams
-- [ ] Tax calculations and modeling
-- [ ] Scenario saving and loading
+### Phase 2: Historical Data Enhancement
+- [ ] Shiller Dataset Integration
+  - [ ] Data download mechanism
+  - [ ] Processing pipeline setup
+  - [ ] Validation framework
+  - [ ] Update automation
+- [ ] Data Source Integration
+  - [ ] Merge FRED and Shiller data
+  - [ ] Validate combined dataset
+  - [ ] Implement quality checks
+  - [ ] Handle data conflicts
+- [ ] Historical Analysis Tools
+  - [ ] Period comparison tools
+  - [ ] Data visualization
+  - [ ] Anomaly detection
+  - [ ] Trend analysis
+- [ ] Data Management
+  - [ ] Version control system
+  - [ ] Update mechanisms
+  - [ ] Backup strategies
+  - [ ] Data integrity checks
 
-### Phase 3: Visualization & Analysis
-- [ ] Interactive portfolio projections
-- [ ] Success rate analysis charts
-- [ ] Scenario comparison tools
-- [ ] Data export capabilities
-- [ ] Responsive design implementation
-
-### Phase 4: Enhanced Features
-- [ ] Multiple withdrawal strategy support
+### Phase 3: Advanced Calculations
+- [ ] Monte Carlo Projections
+  - [ ] Forward-looking simulations
+  - [ ] Market assumptions configuration
+  - [ ] Multiple projection methods
+  - [ ] Results analysis tools
+- [ ] Withdrawal Strategies
   - [ ] Fixed withdrawals
   - [ ] Variable spending
-  - [ ] Percentage of portfolio
-  - [ ] VPW (Variable Percentage Withdrawal)
-- [ ] Advanced tax considerations
-- [ ] Real estate investment modeling
-- [ ] Shareable scenario URLs
+  - [ ] VPW implementation
+  - [ ] Strategy comparison
+- [ ] Additional Features
+  - [ ] Custom income/expense streams
+  - [ ] Tax calculations
+  - [ ] Scenario management
+  - [ ] Data export/import
+
+### Phase 4: Visualization & Analysis
+- [ ] Chart Components
+  - [ ] Portfolio projections
+  - [ ] Success rate analysis
+  - [ ] Confidence bands
+  - [ ] Interactive features
+- [ ] Analysis Tools
+  - [ ] Scenario comparison
+  - [ ] Strategy analysis
+  - [ ] Risk assessment
+  - [ ] Performance metrics
+- [ ] Data Presentation
+  - [ ] Detailed results tables
+  - [ ] Export capabilities
+  - [ ] Custom reporting
+  - [ ] Print layouts
+- [ ] UI Enhancement
+  - [ ] Responsive design
+  - [ ] Accessibility features
+  - [ ] Performance optimization
+  - [ ] User customization
+
+### Phase 5: Enhanced Features & Optimization
+- [ ] Advanced Features
+  - [ ] Real estate modeling
+  - [ ] Complex tax scenarios
+  - [ ] Multiple portfolio support
+  - [ ] Goal tracking
+- [ ] Sharing & Collaboration
+  - [ ] Shareable URLs
+  - [ ] Scenario export
+  - [ ] Result comparison
+  - [ ] Documentation
+- [ ] Performance Optimization
+  - [ ] Calculation efficiency
+  - [ ] Data caching
+  - [ ] UI responsiveness
+  - [ ] Memory management
+- [ ] Quality Assurance
+  - [ ] Comprehensive testing
+  - [ ] Error monitoring
+  - [ ] Usage analytics
+  - [ ] User feedback system
 
 ## Completion Criteria
 

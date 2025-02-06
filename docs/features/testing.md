@@ -1,177 +1,188 @@
 # Testing Guidelines - nextFire Calculator
 
 ## Overview
-This document outlines the comprehensive testing strategy for the nextFire Calculator, ensuring accuracy of financial calculations, reliability of data visualizations, and proper functionality of local storage features.
+This document outlines the comprehensive testing strategy for the nextFire Calculator, ensuring accuracy of financial calculations, reliability of data processing, and proper functionality of the application.
+
+## Current Testing Status
+
+### Completed
+- [x] Basic test infrastructure setup
+- [x] Unit tests for core calculations
+- [x] FRED API integration tests
+- [x] Database operation tests
+- [x] Initial component tests
+
+### In Progress
+- [ ] Shiller data validation tests
+- [ ] Data merging verification
+- [ ] Enhanced UI component testing
+- [ ] Performance benchmarking
+- [ ] E2E test implementation
 
 ## Testing Pyramid
 
 ### 1. Unit Tests
 - **Framework:** Jest with React Testing Library
 - **Coverage Areas:**
-  - Financial calculation functions
-  - Withdrawal strategy implementations
-  - Data transformation utilities
-  - UI component rendering
-  - Form validation logic
+  - Financial calculations
+  - Data processing functions
+  - UI components
+  - Utility functions
+  - Type validations
 
 #### Example Unit Tests
-```javascript
+```typescript
+describe('Historical Data Processing', () => {
+  test('correctly processes FRED API data', () => {
+    const rawData = mockFREDData();
+    const processed = processFREDData(rawData);
+    expect(processed).toMatchSnapshot();
+  });
+
+  test('validates Shiller data format', () => {
+    const rawData = mockShillerData();
+    expect(() => validateShillerData(rawData)).not.toThrow();
+  });
+});
+
 describe('Portfolio Calculations', () => {
-  test('calculates correct portfolio value with compound interest', () => {
+  test('calculates compound growth accurately', () => {
     const initial = 100000;
     const rate = 0.07;
     const years = 30;
     expect(calculateCompoundGrowth(initial, rate, years))
       .toBeCloseTo(761225.50, 2);
   });
-
-  test('implements VPW withdrawal strategy correctly', () => {
-    const portfolio = 1000000;
-    const age = 65;
-    const allocation = { stocks: 0.6, bonds: 0.4 };
-    expect(calculateVPWWithdrawal(portfolio, age, allocation))
-      .toMatchSnapshot();
-  });
 });
 ```
 
 ### 2. Integration Tests
-- **Framework:** Cypress for component integration
-- **Focus Areas:**
-  - Data flow between components
-  - Chart rendering with real data
-  - Local storage operations
-  - URL parameter handling
+- **Focus:** Component interactions and data flow
+- **Key Areas:**
+  - Data pipeline integration
+  - Database operations
+  - API interactions
+  - State management
+  - Form submissions
 
 #### Example Integration Tests
-```javascript
-describe('Scenario Management', () => {
-  it('saves and loads scenarios correctly', () => {
-    cy.createScenario({
-      portfolio: 1000000,
-      spending: 40000,
-      allocation: { stocks: 0.8, bonds: 0.2 }
-    });
-    cy.saveScenario();
-    cy.loadScenario();
-    cy.get('[data-testid="portfolio-value"]')
-      .should('have.value', '1000000');
+```typescript
+describe('Data Integration', () => {
+  it('successfully merges FRED and Shiller data', async () => {
+    const fredData = await loadFREDData();
+    const shillerData = await loadShillerData();
+    const merged = await mergeHistoricalData(fredData, shillerData);
+    
+    expect(merged).toMatchSchema(historicalDataSchema);
+    expect(merged.length).toBeGreaterThan(0);
+    expect(merged[0].year).toBe(1871);
   });
 });
 ```
 
 ### 3. End-to-End Tests
-- **Framework:** Cypress
-- **Test Scenarios:**
-  - Complete simulation workflows
-  - Scenario comparison features
-  - Data export functionality
-  - URL sharing capabilities
+- **Framework:** Playwright
+- **Coverage:**
+  - Complete user workflows
+  - Data visualization
+  - Form interactions
+  - Error handling
+  - Browser compatibility
 
 ## Specialized Testing Areas
 
-### 1. Financial Calculation Testing
-- **Historical Data Validation**
-  - Verify accuracy of loaded historical returns
-  - Test inflation adjustments
-  - Validate asset class calculations
-
-- **Simulation Engine Testing**
-  ```javascript
-  describe('Historical Simulation', () => {
-    test('correctly processes all historical cycles', () => {
-      const cycles = runHistoricalSimulation({
-        portfolio: 1000000,
-        duration: 30,
-        spending: 40000
-      });
-      expect(cycles.length).toBe(expectedCycles);
-      expect(cycles[0].successRate).toBeCloseTo(expectedRate, 2);
-    });
+### 1. Data Processing Tests
+```typescript
+describe('Historical Data Pipeline', () => {
+  test('handles missing data points', () => {
+    const data = mockDataWithGaps();
+    const processed = processHistoricalData(data);
+    expect(processed.gaps).toEqual([]);
   });
-  ```
 
-### 2. Data Visualization Testing
-- **Chart Rendering**
-  - Verify correct data representation
-  - Test interactive features
-  - Validate responsive behavior
-
-- **Visual Regression Testing**
-  ```javascript
-  describe('Portfolio Chart', () => {
-    it('renders correctly with different datasets', () => {
-      cy.mount(<PortfolioChart data={sampleData} />);
-      cy.matchImageSnapshot();
-    });
-  });
-  ```
-
-### 3. Local Storage Testing
-- **Database Operations**
-  - Test scenario saving/loading
-  - Verify data persistence
-  - Validate migration handling
-
-- **URL Parameter Testing**
-  ```javascript
-  describe('URL Sharing', () => {
-    it('correctly encodes and decodes scenario parameters', () => {
-      const scenario = createTestScenario();
-      const url = encodeScenarioToURL(scenario);
-      const decoded = decodeScenarioFromURL(url);
-      expect(decoded).toEqual(scenario);
-    });
-  });
-  ```
-
-## Performance Testing
-
-### 1. Simulation Performance
-- **Metrics to Test:**
-  - Simulation execution time
-  - Memory usage during calculations
-  - UI responsiveness during processing
-
-```javascript
-describe('Performance', () => {
-  test('completes Monte Carlo simulation within time limit', async () => {
-    const startTime = performance.now();
-    await runMonteCarloSimulation(1000);
-    const duration = performance.now() - startTime;
-    expect(duration).toBeLessThan(maxAllowedTime);
+  test('validates data consistency', () => {
+    const data = mockHistoricalData();
+    const validation = validateDataConsistency(data);
+    expect(validation.isValid).toBe(true);
   });
 });
 ```
 
-### 2. Chart Performance
-- **Areas to Monitor:**
-  - Chart rendering speed
-  - Interaction responsiveness
-  - Memory usage with large datasets
+### 2. Financial Calculation Tests
+```typescript
+describe('Simulation Engine', () => {
+  test('calculates success rates accurately', () => {
+    const portfolio = createTestPortfolio();
+    const results = runSimulation(portfolio);
+    expect(results.successRate).toBeCloseTo(0.95, 2);
+  });
 
-## Accessibility Testing
+  test('handles extreme market conditions', () => {
+    const crashScenario = loadHistoricalCrash();
+    const results = runSimulation(crashScenario);
+    expect(results.worstCase).toBeDefined();
+  });
+});
+```
 
-### 1. Component Accessibility
-- Screen reader compatibility
-- Keyboard navigation
-- ARIA attribute validation
+### 3. UI Component Tests
+```typescript
+describe('Portfolio Form', () => {
+  test('validates input correctly', async () => {
+    render(<PortfolioForm />);
+    
+    await userEvent.type(
+      screen.getByLabelText('Portfolio Value'),
+      'invalid'
+    );
+    
+    expect(screen.getByText('Must be a number'))
+      .toBeInTheDocument();
+  });
+});
+```
 
-```javascript
-describe('Accessibility', () => {
-  test('form inputs have proper aria labels', () => {
-    render(<PortfolioInput />);
-    const input = screen.getByLabelText('Portfolio Value');
-    expect(input).toHaveAttribute('aria-label');
+## Performance Testing
+
+### 1. Data Processing Performance
+```typescript
+describe('Performance', () => {
+  test('processes large datasets efficiently', async () => {
+    const startTime = performance.now();
+    await processHistoricalData(largeDataset);
+    const duration = performance.now() - startTime;
+    expect(duration).toBeLessThan(1000);
+  });
+});
+```
+
+### 2. Simulation Performance
+```typescript
+describe('Simulation Performance', () => {
+  test('completes calculations within time limit', () => {
+    const startTime = performance.now();
+    const results = runFullSimulation(testScenario);
+    const duration = performance.now() - startTime;
+    expect(duration).toBeLessThan(2000);
   });
 });
 ```
 
 ## Test Environment Setup
 
-### 1. Local Development
-```javascript
-// jest.setup.js
+### Development Environment
+```typescript
+// jest.config.ts
+export default {
+  preset: 'ts-jest',
+  testEnvironment: 'jsdom',
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1'
+  }
+};
+
+// jest.setup.ts
 import '@testing-library/jest-dom';
 import { setupTestDatabase } from './testUtils';
 
@@ -180,41 +191,66 @@ beforeAll(async () => {
 });
 ```
 
-### 2. CI/CD Integration
-- Automated test runs on pull requests
-- Performance benchmark tracking
-- Coverage reporting
+## Testing Guidelines
 
-## Best Practices
+### 1. Data Testing
+- Validate data integrity
+- Test edge cases
+- Verify calculations
+- Check data consistency
 
-### 1. Test Data Management
-- Use realistic financial data samples
-- Maintain consistent test scenarios
-- Clean up test data after runs
+### 2. Component Testing
+- Test user interactions
+- Verify state updates
+- Check accessibility
+- Test error states
 
-### 2. Test Organization
-```javascript
-// Group tests by feature
-describe('Withdrawal Strategies', () => {
-  describe('Fixed Withdrawal', () => {
-    // Fixed withdrawal tests
-  });
-  
-  describe('Variable Withdrawal', () => {
-    // Variable withdrawal tests
-  });
-});
+### 3. Integration Testing
+- Test data flow
+- Verify API interactions
+- Check state management
+- Test error handling
+
+## Continuous Integration
+
+### GitHub Actions Workflow
+```yaml
+name: Test Suite
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependencies
+        run: npm install
+      - name: Run Tests
+        run: npm test
+      - name: Run E2E Tests
+        run: npm run test:e2e
 ```
 
-### 3. Documentation
-- Document test scenarios
-- Maintain testing guidelines
-- Update test documentation with new features
+## Quality Metrics
 
-## Continuous Improvement
-- Regular test coverage reviews
-- Performance benchmark monitoring
-- Test suite optimization
-- Integration of user feedback
+### Coverage Goals
+- Unit Tests: 90%+
+- Integration Tests: 80%+
+- E2E Tests: Key workflows
+- Performance Tests: Critical paths
 
-Remember: Financial calculation accuracy is critical - prioritize thorough testing of all calculation logic and validate results against known good examples.
+### Performance Targets
+- Data Processing: <1s
+- Simulation Run: <2s
+- UI Interactions: <100ms
+- API Responses: <200ms
+
+## Future Improvements
+
+### Planned Enhancements
+1. Visual regression testing
+2. Automated performance monitoring
+3. Enhanced error scenario testing
+4. Cross-browser testing
+5. Accessibility testing suite
+
+Remember: Testing is critical for ensuring reliable financial calculations and data processing. Maintain high test coverage and regularly review test effectiveness.

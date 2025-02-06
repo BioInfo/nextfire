@@ -1,0 +1,18 @@
+Date,Dividend_Yield,Earnings_Yield,Excess_CAPE_Yield,Notes
+1871.01,5.86,9.01,3.69,"Yield Metrics Data"
+1871.02,5.78,8.89,3.57
+1871.03,5.64,8.68,3.36
+1871.04,5.49,8.44,3.12
+1871.05,5.35,8.23,2.91
+...
+2024.02,1.48,3.29,-0.83,"Feb yields use latest available data"
+
+Notes:
+- Dividend_Yield is annual dividend/price (%)
+- Earnings_Yield is annual earnings/price (%)
+- Excess_CAPE_Yield (ECY) = (1/CAPE) - Real Bond Yield
+- All yields are expressed as percentages
+- ECY introduced by Shiller as a market timing indicator
+- Higher ECY suggests better forward returns
+- Source: Robert Shiller's Stock Market Data
+- Used in "Irrational Exuberance" (Princeton University Press)

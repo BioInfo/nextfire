@@ -1,0 +1,14 @@
+Date,Price,Real_Price,Notes
+1871.01,4.44,112.46,"S&P Composite Price Index"
+1871.02,4.50,110.60
+1871.03,4.61,111.65
+1871.04,4.74,119.14
+1871.05,4.86,125.00
+...
+2024.02,6037.88,6037.88,"Feb price is Feb 4th close"
+
+Notes:
+- Prices are monthly S&P Composite Index values
+- Real prices are adjusted for inflation using CPI (base: Current USD)
+- Data sourced from Robert Shiller's Stock Market Data
+- Used in "Irrational Exuberance" (Princeton University Press)

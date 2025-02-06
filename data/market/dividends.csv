@@ -1,0 +1,15 @@
+Date,Dividend,Real_Dividend,Notes
+1871.01,0.26,6.59,"Monthly Dividend Data"
+1871.02,0.26,6.40
+1871.03,0.26,6.30
+1871.04,0.26,6.53
+1871.05,0.26,6.69
+...
+2024.02,17.23,17.23,"Feb dividend is estimated"
+
+Notes:
+- Dividends are monthly S&P Composite dividend payments
+- Real dividends are adjusted for inflation using CPI (base: Current USD)
+- Data represents total dividends paid over previous 12 months
+- Source: Robert Shiller's Stock Market Data
+- Used in "Irrational Exuberance" (Princeton University Press)

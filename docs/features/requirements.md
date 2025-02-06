@@ -8,11 +8,12 @@ This document details the requirements for the nextFire Calculator, a modern FIR
 ### 1. Core Simulation Engine
 
 #### Input Collection
-- [ ] Portfolio value entry
+- [x] Portfolio value entry
+- [x] Asset allocation settings
+- [x] Basic input validation
 - [ ] Annual spending input
 - [ ] Income streams configuration
 - [ ] Tax rate specification
-- [ ] Asset allocation settings
 - [ ] Variable inputs for:
   - Pre-retirement savings
   - Post-retirement spending strategies
@@ -22,154 +23,182 @@ This document details the requirements for the nextFire Calculator, a modern FIR
     - VPW (Variable Percentage Withdrawal)
 
 #### Simulation Modes
-- [ ] Historical Simulation
-  - Use market data from 1871 to present
-  - Calculate outcomes for each possible historical cycle
-  - Support custom cycle lengths (default 30 years)
+- [x] Basic Historical Simulation (1947-present)
+  - [x] Single cycle simulation
+  - [x] Multiple cycle analysis
+  - [x] Success rate calculation
+  - [x] Portfolio statistics
+- [ ] Enhanced Historical Simulation
+  - [ ] Extended data (1871-present)
+  - [ ] Custom cycle lengths
+  - [ ] Period comparison
 - [ ] Monte Carlo Simulation
-  - Generate randomized trials using historical distributions
-  - Configurable number of simulation runs
+  - [ ] Randomized trials
+  - [ ] Distribution analysis
+  - [ ] Confidence intervals
 - [ ] Fixed-Rate Projections
-  - Support user-defined constant return rates
-  - Allow separate rates for different asset classes
+  - [ ] User-defined rates
+  - [ ] Asset-specific returns
 
 #### Scenario Management
-- [ ] Save and load user scenarios
-- [ ] Custom income/expense streams with start/end dates
-- [ ] Adjustable withdrawal strategies
-  - Floor/ceiling limits for spending
-  - Multiple withdrawal models
-- [ ] Generate shareable scenario URLs
+- [x] Basic scenario configuration
+- [ ] Save and load functionality
+- [ ] Custom income/expense streams
+- [ ] Advanced withdrawal strategies
+- [ ] Shareable URLs
 
 ### 2. Historical Data Integration
 
 #### Data Sources
-- [ ] Load and process data from 1871 to present
-- [ ] Include:
-  - Equity returns (nominal and real)
-  - Bond returns (10-year Treasury yields)
-  - Inflation rates (CPI data)
-  - Optional: Gold prices, cash yields
+- [x] FRED API Integration
+  - [x] Recent market data
+  - [x] Error handling
+  - [x] Data validation
+- [ ] Shiller Dataset Integration
+  - [ ] Historical data (1871-present)
+  - [ ] Data processing pipeline
+  - [ ] Validation framework
+  - [ ] Merge with FRED data
 
 #### Data Management
-- [ ] Store historical data in SQLite via Prisma
-- [ ] Support data updates for new years
-- [ ] Efficient querying system for simulations
+- [x] SQLite with Prisma integration
+- [x] Basic data validation
+- [x] Error handling
+- [ ] Automated updates
+- [ ] Data quality checks
+- [ ] Version control
+- [ ] Backup mechanisms
 
 ### 3. Visualization and Reporting
 
 #### Charts and Graphs
-- [ ] Interactive line charts
-- [ ] Histograms for distribution analysis
-- [ ] Probability bands visualization
-- [ ] Drill-down capabilities for detailed views
+- [ ] Portfolio Balance Charts
+  - [ ] Line charts
+  - [ ] Confidence bands
+  - [ ] Interactive features
+- [ ] Analysis Tools
+  - [ ] Success rate display
+  - [ ] Risk assessment
+  - [ ] Performance metrics
+- [ ] Data Presentation
+  - [ ] Results tables
+  - [ ] Custom reports
+  - [ ] Export options
 
 #### Dashboard Elements
-- [ ] Summary metrics display
-  - Success rate
-  - Median ending portfolio
-  - Worst/best-case scenarios
-- [ ] Scenario comparison tools
-- [ ] Export functionality
-  - PNG image export
-  - CSV data download
+- [ ] Summary Statistics
+  - [ ] Success rates
+  - [ ] Portfolio metrics
+  - [ ] Risk indicators
+- [ ] Comparison Tools
+  - [ ] Strategy comparison
+  - [ ] Period analysis
+  - [ ] Scenario comparison
 
 ### 4. User Management and Data Persistence
 
 #### Local Storage
-- [ ] SQLite database integration
-- [ ] Save/retrieve user scenarios
-- [ ] Store historical data locally
+- [x] SQLite database setup
+- [x] Prisma ORM integration
+- [ ] Scenario persistence
+- [ ] Settings management
+- [ ] Data export/import
 
 #### Sharing Capabilities
-- [ ] Generate shareable URLs
-- [ ] Encode simulation parameters in URLs
-- [ ] Support scenario importing
+- [ ] URL generation
+- [ ] Parameter encoding
+- [ ] Import/export system
+- [ ] Documentation sharing
 
 ## Non-Functional Requirements
 
 ### 1. Performance
-- [ ] Fast simulation processing
-  - Optimize database queries
-  - Efficient in-memory calculations
-- [ ] Responsive UI interactions
-  - Quick component rendering
-  - Smooth transitions
-- [ ] Efficient data loading
-  - Lazy loading for large datasets
-  - Caching strategies
+- [x] Efficient data querying
+- [x] Type-safe operations
+- [ ] Fast calculations
+- [ ] Responsive UI
+- [ ] Optimized data loading
+- [ ] Caching system
 
 ### 2. Scalability
-- [ ] Modular architecture
-  - Support for new simulation models
-  - Extensible asset class system
-- [ ] Flexible data structure
-  - Accommodate additional historical data
-  - Support new calculation methods
+- [x] Modular architecture
+- [x] Extensible database schema
+- [ ] Plugin system
 - [ ] API readiness
-  - Prepared for future external API integration
-  - Expandable data sources
+- [ ] Feature flags
+- [ ] Configuration management
 
 ### 3. Security & Privacy
-- [ ] Local data storage
-  - No external data transmission
-  - Secure local database handling
-- [ ] Data integrity
-  - Validation of user inputs
-  - Protection against invalid calculations
-- [ ] URL security
-  - Safe parameter encoding
-  - No sensitive data in URLs
+- [x] Local-first architecture
+- [x] Data validation
+- [x] Error handling
+- [ ] Input sanitization
+- [ ] Safe URL sharing
+- [ ] Data encryption
 
 ### 4. Maintainability
-- [ ] Clean code architecture
-  - Separation of concerns
-  - Clear module boundaries
-- [ ] Comprehensive documentation
-  - Code comments
-  - API documentation
-  - User guides
+- [x] TypeScript implementation
+- [x] Code organization
+- [x] Documentation structure
 - [ ] Testing coverage
-  - Unit tests
-  - Integration tests
-  - UI component tests
+- [ ] CI/CD pipeline
+- [ ] Monitoring system
 
 ### 5. Accessibility
-- [ ] WCAG 2.1 compliance
-- [ ] Keyboard navigation
+- [x] ARIA attributes
+- [x] Keyboard navigation
 - [ ] Screen reader support
-- [ ] High contrast support
+- [ ] Color contrast
+- [ ] Focus management
+- [ ] Error announcements
 
 ### 6. Browser Compatibility
-- [ ] Support modern browsers
-  - Chrome
-  - Firefox
-  - Safari
-  - Edge
-- [ ] Responsive design
-  - Mobile compatibility
-  - Tablet optimization
-  - Desktop layouts
+- [x] Modern browser support
+- [x] Responsive layouts
+- [ ] Mobile optimization
+- [ ] Touch interactions
+- [ ] Offline capabilities
+- [ ] Print layouts
 
-## Implementation Considerations
+## Implementation Priorities
 
-### Development Priorities
-1. Core simulation engine functionality
-2. Basic UI implementation
-3. Data visualization components
-4. Local storage integration
-5. Advanced features and optimizations
+### Current Focus
+1. Shiller dataset integration
+2. Data processing pipeline
+3. Visualization components
+4. Withdrawal strategies
+5. Testing infrastructure
 
-### Risk Mitigation
-- Regular testing of calculations
-- Validation of historical data
-- Performance monitoring
-- User feedback integration
+### Next Phase
+1. Monte Carlo simulations
+2. Advanced UI features
+3. Export capabilities
+4. Documentation updates
+5. Performance optimization
 
-### Maintenance Guidelines
-- Regular code reviews
-- Documentation updates
-- Performance optimization
-- Security assessments
+### Future Considerations
+1. Real estate modeling
+2. Tax calculations
+3. Goal tracking
+4. Collaboration features
+5. Advanced analytics
 
-Remember: These requirements serve as a living document and should be reviewed and updated as the project evolves. Regular stakeholder feedback should be incorporated to ensure the application meets user needs effectively.
+## Quality Assurance
+
+### Testing Strategy
+- [x] Unit test framework
+- [x] Integration tests
+- [ ] E2E testing
+- [ ] Visual regression
+- [ ] Performance testing
+- [ ] Security audits
+
+### Monitoring Plan
+- [ ] Error tracking
+- [ ] Performance metrics
+- [ ] Usage analytics
+- [ ] User feedback
+- [ ] System health
+- [ ] Data quality
+
+Remember: These requirements are continuously evolving based on project progress and user feedback. Regular reviews ensure alignment with project goals and user needs.

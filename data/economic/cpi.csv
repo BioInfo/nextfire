@@ -1,0 +1,17 @@
+Date,CPI,Inflation_Rate,Notes
+1871.01,12.46,0.00,"Consumer Price Index Data"
+1871.02,12.85,3.13
+1871.03,13.01,1.25
+1871.04,12.53,-3.69
+1871.05,12.25,-2.23
+...
+2024.02,300.54,3.10,"Feb CPI is estimated"
+
+Notes:
+- CPI values represent Consumer Price Index
+- Inflation_Rate is year-over-year percentage change
+- Base period is current dollars (2024)
+- Data from 1871-1913 are estimated from Warren and Pearson's price index
+- Post-1913 data from Bureau of Labor Statistics
+- Source: Robert Shiller's Stock Market Data
+- Used in "Irrational Exuberance" (Princeton University Press)

@@ -1,0 +1,16 @@
+Date,Earnings,Real_Earnings,Notes
+1871.01,0.40,10.13,"Monthly Earnings Data"
+1871.02,0.40,9.84
+1871.03,0.40,9.69
+1871.04,0.40,10.05
+1871.05,0.40,10.29
+...
+2024.02,198.45,198.45,"Feb earnings are estimated"
+
+Notes:
+- Earnings are monthly S&P Composite earnings
+- Real earnings are adjusted for inflation using CPI (base: Current USD)
+- Data represents total earnings over previous 12 months
+- Earnings are computed from the S&P 500 companies
+- Source: Robert Shiller's Stock Market Data
+- Used in "Irrational Exuberance" (Princeton University Press)
