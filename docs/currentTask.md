@@ -2,46 +2,46 @@
 
 ## Current Objectives
 
-1. Historical Data Integration
-   - Create data loader script for Shiller dataset ✓
-   - Process and validate historical market data ✓
-   - Import data into SQLite database
-   - Add data validation tests ✓
-
-2. Basic Simulation Engine Implementation
-   - Complete the historical simulation logic ✓
-   - Implement core calculation methods ✓
-   - Add basic error handling and validation ✓
-   - Create unit tests for calculations ✓
-
-3. Financial Input Forms
+1. Portfolio Input Interface
    - Create form components using shadcn/ui
+   - Implement portfolio value input
+   - Add asset allocation sliders
    - Implement input validation
-   - Add tooltips and help text
+
+2. Withdrawal Strategy Configuration
+   - Create strategy selection component
+   - Implement fixed withdrawal inputs
+   - Add percentage-based withdrawal options
+   - Create inflation adjustment toggle
+
+3. Results Visualization
+   - Implement portfolio balance chart
+   - Add success rate visualization
+   - Create yearly results table
+   - Add export functionality
 
 ## Context
-These tasks tie into Phase 1: Core Simulation Engine from the project roadmap. We have completed the initial setup and infrastructure, implemented the historical simulation engine, and added test coverage.
+We have completed the core simulation engine implementation and historical data integration using the FRED API. The next phase focuses on creating an intuitive user interface for configuring simulations and visualizing results. These tasks align with Phase 1 and Phase 3 of the project roadmap.
 
 ## Next Steps
 
-### Historical Data Integration
-- [x] Create data processing script in src/lib/database/dataLoader.ts
-- [ ] Download and validate Shiller dataset
-- [x] Implement data normalization functions
-- [x] Create database migration for historical data
-- [x] Add data validation tests
+### Portfolio Configuration UI
+- [ ] Create portfolio value input component
+- [ ] Implement asset allocation slider
+- [ ] Add input validation and error messages
+- [ ] Create tooltips and help text
 
-### Simulation Engine
-- [x] Complete historical simulation implementation in src/lib/simulation/historical.ts
-- [x] Add portfolio calculation functions
-- [x] Implement withdrawal strategy interfaces
-- [x] Create unit tests for calculations
+### Withdrawal Strategy UI
+- [ ] Build strategy selection dropdown
+- [ ] Create withdrawal amount input
+- [ ] Implement percentage vs fixed toggle
+- [ ] Add inflation adjustment options
 
-### UI Development
-- [ ] Create financial input form components
-- [ ] Add form validation with error messages
-- [ ] Implement responsive layout adjustments
-- [ ] Add loading states and error handling
+### Results Visualization
+- [ ] Set up chart library integration
+- [ ] Create portfolio balance line chart
+- [ ] Implement success rate visualization
+- [ ] Build yearly results data table
 
 ## Dependencies
 - Next.js with TypeScript ✓

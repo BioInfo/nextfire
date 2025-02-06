@@ -4,21 +4,20 @@
 
 ### Data Processing Layer
 - **Data Loader (`src/lib/database/dataLoader.ts`):** 
-  - Processes Shiller's historical market data
-  - Normalizes data for database storage
-  - Includes validation and error handling
-  - Supports CSV parsing with data integrity checks
+  - Integrates with FRED API for historical market data
+  - Fetches S&P 500, CPI, and Treasury rates
+  - Includes error handling and rate limiting
+  - Processes and normalizes data for database storage
 
 ### Simulation Engine
-- **Historical Simulation (`src/lib/simulation/historical.ts`):**
+- **Historical Simulation (`src/lib/simulation/engine.ts` & `types.ts`):**
   - Implements cycle-based portfolio simulations
   - Supports multiple withdrawal strategies:
     - Fixed withdrawals
-    - Variable spending
     - Percentage of portfolio
-    - VPW (Variable Percentage Withdrawal)
   - Handles asset allocation and rebalancing
   - Includes inflation adjustments
+  - Provides detailed yearly results
 
 ### Database Layer
 - **Prisma ORM Integration (`src/lib/database/prisma.ts`):**
@@ -48,10 +47,10 @@
 - TypeScript with strict mode
 
 ## Recent Changes
-- Implementation of historical data processing
-- Addition of simulation engine with withdrawal strategies
-- Setup of testing infrastructure
-- Database schema implementation
+- Migration from Shiller dataset to FRED API
+- Implementation of historical cycle simulation engine
+- Addition of comprehensive project documentation
+- Creation of simulation test infrastructure
 
 ## Code Organization
 ```
@@ -76,9 +75,9 @@ tests/
 4. Document significant changes
 
 ## Next Steps
-1. Implement Shiller dataset download functionality
-2. Develop financial input form components
-3. Add visualization components
+1. Implement portfolio value and asset allocation inputs
+2. Add visualization components for simulation results
+3. Expand withdrawal strategy options
 4. Set up continuous integration
 
 ## User Feedback Integration
