@@ -41,8 +41,8 @@
   - [x] Validate combined dataset
   - [x] Implement quality checks
   - [x] Handle data conflicts
-- [ ] Historical Analysis Tools
-  - [ ] Period comparison tools
+- [x] Historical Analysis Tools
+  - [x] Period comparison tools
   - [ ] Data visualization
   - [ ] Anomaly detection
   - [ ] Trend analysis
@@ -180,8 +180,8 @@
 - [x] Historical data integration
 - [x] Basic simulation engine
 - [x] Portfolio input interface
-- [ ] Withdrawal strategy interface
-- [ ] Results visualization
+- [x] Withdrawal strategy interface
+- [x] Results visualization
 
 ### User Interface
 - [x] Design system implementation

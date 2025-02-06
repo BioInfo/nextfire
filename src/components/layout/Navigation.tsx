@@ -37,6 +37,16 @@ export function Navigation() {
             >
               Simulation
             </Link>
+            <Link 
+              href="/analysis" 
+              className={`px-3 py-2 rounded-md text-sm font-medium ${
+                pathname === '/analysis' 
+                  ? 'bg-primary text-primary-foreground' 
+                  : 'text-foreground hover:bg-accent hover:text-accent-foreground'
+              }`}
+            >
+              Analysis
+            </Link>
           </div>
         </div>
       </div>

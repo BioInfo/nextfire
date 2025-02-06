@@ -4,17 +4,35 @@ import { PortfolioForm } from '@/components/portfolio/PortfolioForm';
 import { WithdrawalForm } from '@/components/withdrawal/WithdrawalForm';
 import { SimulationResults } from '@/components/simulation/SimulationResults';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { usePortfolioStore } from '@/lib/stores/portfolioStore';
-import { useWithdrawalStore } from '@/lib/stores/withdrawalStore';
-import type { PortfolioFormData } from '@/lib/validation/portfolio';
+import { usePortfolioStore, useHydrated as usePortfolioHydrated } from '@/lib/stores/portfolioStore';
+import { useWithdrawalStore, useWithdrawalHydrated } from '@/lib/stores/withdrawalStore';
+import type { Portfolio } from '@/types/portfolio';
 import type { WithdrawalStrategy } from '@/lib/simulation/strategies/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
+function LoadingState() {
+  return (
+    <div className="min-h-screen bg-gray-50/50 flex items-center justify-center">
+      <div className="text-center">
+        <h2 className="text-xl font-semibold mb-2">Loading...</h2>
+        <p className="text-gray-500">Restoring your previous configuration</p>
+      </div>
+    </div>
+  );
+}
+
 export default function SimulationPage() {
+  const isPortfolioHydrated = usePortfolioHydrated();
+  const isWithdrawalHydrated = useWithdrawalHydrated();
+  const isHydrated = isPortfolioHydrated && isWithdrawalHydrated;
   const { portfolio, setPortfolio } = usePortfolioStore();
   const { strategy, setStrategy } = useWithdrawalStore();
 
-  const handlePortfolioSubmit = (data: PortfolioFormData) => {
+  if (!isHydrated) {
+    return <LoadingState />;
+  }
+
+  const handlePortfolioSubmit = (data: Portfolio) => {
     setPortfolio(data);
   };
 
@@ -75,15 +93,50 @@ export default function SimulationPage() {
                     <div className="pb-4">
                       <h3 className="text-sm font-medium text-gray-500 mb-3">Portfolio</h3>
                       <p className="text-lg font-semibold mb-3">Initial Balance: ${portfolio.initialBalance.toLocaleString()}</p>
-                      <div className="grid grid-cols-2 gap-4 bg-gray-50/50 p-3 rounded-lg">
-                        <div>
-                          <p className="text-sm text-gray-500">Stocks</p>
-                          <p className="text-lg font-medium">{portfolio.stockAllocation}%</p>
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-2 gap-4 bg-gray-50/50 p-3 rounded-lg">
+                          <div>
+                            <p className="text-sm text-gray-500">Stocks</p>
+                            <p className="text-lg font-medium">{portfolio.stockAllocation}%</p>
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-500">Bonds</p>
+                            <p className="text-lg font-medium">{portfolio.bondAllocation}%</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm text-gray-500">Bonds</p>
-                          <p className="text-lg font-medium">{portfolio.bondAllocation}%</p>
+
+                        <div className="bg-gray-50/50 p-3 rounded-lg">
+                          <p className="text-sm text-gray-500">Rebalancing</p>
+                          <p className="text-lg font-medium capitalize">
+                            {(() => {
+                              switch (portfolio.rebalancing.strategy) {
+                                case 'periodic':
+                                  return `Every ${portfolio.rebalancing.frequency ?? 3} months`;
+                                case 'threshold':
+                                  return `${portfolio.rebalancing.threshold ?? 5}% threshold`;
+                                default:
+                                  return 'No rebalancing';
+                              }
+                            })()}
+                          </p>
                         </div>
+
+                        {portfolio.dynamicAllocation.enabled && (
+                          <div className="bg-gray-50/50 p-3 rounded-lg">
+                            <p className="text-sm text-gray-500">Dynamic Allocation</p>
+                            <p className="text-lg font-medium capitalize">{portfolio.dynamicAllocation.type}</p>
+                            {(portfolio.dynamicAllocation.type === 'dividend' || portfolio.dynamicAllocation.type === 'both') && (
+                              <p className="text-sm text-gray-500">
+                                Dividend: {portfolio.dynamicAllocation.dividendThresholds.low}% - {portfolio.dynamicAllocation.dividendThresholds.high}%
+                              </p>
+                            )}
+                            {(portfolio.dynamicAllocation.type === 'valuation' || portfolio.dynamicAllocation.type === 'both') && (
+                              <p className="text-sm text-gray-500">
+                                P/E: {portfolio.dynamicAllocation.valuationThresholds.low} - {portfolio.dynamicAllocation.valuationThresholds.high}
+                              </p>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}

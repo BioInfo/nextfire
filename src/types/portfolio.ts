@@ -1,54 +1,61 @@
-export type RebalancingFrequency = 'never' | 'monthly' | 'quarterly' | 'annually' | 'threshold';
+export type RebalancingStrategy = 'periodic' | 'threshold' | 'none';
 
-export interface RebalancingThresholds {
-  stocks: number;  // Percentage threshold (e.g., 5 means rebalance when stocks drift ±5%)
-  bonds: number;   // Percentage threshold
+export interface DynamicAllocationThresholds {
+  low: number;
+  high: number;
 }
 
-export interface PortfolioConfig {
+export interface DynamicAllocation {
+  enabled: boolean;
+  type: 'dividend' | 'valuation' | 'both';
+  dividendThresholds: DynamicAllocationThresholds;
+  valuationThresholds: DynamicAllocationThresholds;
+}
+
+export interface Rebalancing {
+  strategy: RebalancingStrategy;
+  frequency?: number; // For periodic rebalancing (in months)
+  threshold?: number; // For threshold rebalancing (percentage deviation)
+}
+
+export interface Portfolio {
   initialBalance: number;
   stockAllocation: number;  // 0-100
   bondAllocation: number;   // 0-100
-  rebalancingFrequency: RebalancingFrequency;
-  rebalancingThresholds?: RebalancingThresholds;  // Required only when frequency is 'threshold'
-  trackDrift: boolean;  // Whether to track and report portfolio drift
+  rebalancing: Rebalancing;
+  dynamicAllocation: DynamicAllocation;
 }
 
-export interface PortfolioValidation {
-  initialBalance?: string[];
-  stockAllocation?: string[];
-  bondAllocation?: string[];
-  rebalancingThresholds?: string[];
-}
-
-export type PortfolioFormData = {
-  initialBalance: string;
-  stockAllocation: number;
-  bondAllocation: number;
-  rebalancingFrequency: RebalancingFrequency;
-  stockThreshold?: number;
-  bondThreshold?: number;
-  trackDrift: boolean;
-}
-
-export const DEFAULT_PORTFOLIO_CONFIG: PortfolioConfig = {
+export const DEFAULT_PORTFOLIO: Portfolio = {
   initialBalance: 1000000,  // $1M default
   stockAllocation: 60,      // 60/40 portfolio
   bondAllocation: 40,
-  rebalancingFrequency: 'annually',
-  rebalancingThresholds: {
-    stocks: 5,  // 5% threshold
-    bonds: 5
+  rebalancing: {
+    strategy: 'periodic',
+    frequency: 3, // Quarterly by default
   },
-  trackDrift: true
+  dynamicAllocation: {
+    enabled: false,
+    type: 'dividend',
+    dividendThresholds: {
+      low: 2,
+      high: 5,
+    },
+    valuationThresholds: {
+      low: 15,
+      high: 25,
+    },
+  },
 };
 
-export const REBALANCING_FREQUENCY_OPTIONS = [
-  { value: 'never', label: 'Never' },
-  { value: 'monthly', label: 'Monthly' },
-  { value: 'quarterly', label: 'Quarterly' },
-  { value: 'annually', label: 'Annually' },
-  { value: 'threshold', label: 'When Threshold Exceeded' }
+export const REBALANCING_OPTIONS = [
+  { value: 'periodic', label: 'Periodic' },
+  { value: 'threshold', label: 'Threshold-based' },
+  { value: 'none', label: 'No Rebalancing' },
 ] as const;
 
-export const DEFAULT_THRESHOLD = 5; // 5% default threshold
+export const DYNAMIC_ALLOCATION_OPTIONS = [
+  { value: 'dividend', label: 'Dividend-based' },
+  { value: 'valuation', label: 'Valuation-based' },
+  { value: 'both', label: 'Both' },
+] as const;

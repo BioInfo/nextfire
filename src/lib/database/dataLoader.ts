@@ -1,8 +1,10 @@
-import { prisma } from './prisma.js';
+import { PrismaClient } from '@prisma/client';
 import axios from 'axios';
 import fs from 'fs/promises';
 import path from 'path';
 import { parse } from 'csv-parse/sync';
+
+const prisma = new PrismaClient();
 
 /**
  * Represents a data point from Shiller dataset

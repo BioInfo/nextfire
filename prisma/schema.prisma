@@ -29,6 +29,8 @@ model HistoricalData {
   inflationRate Float    // Annual inflation rate
   goldReturn    Float?   // Optional gold returns
   cashReturn    Float?   // Optional cash returns
+  peRatio       Float    // Price/Earnings ratio
+  dividendYield Float    // Dividend yield
 }
 
 model SimulationResult {

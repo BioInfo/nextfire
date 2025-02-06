@@ -1,8 +1,5 @@
-export interface Portfolio {
-  initialBalance: number;
-  stockAllocation: number;  // 0-100
-  bondAllocation: number;   // 0-100
-}
+import type { Portfolio } from '@/types/portfolio';
+export type { Portfolio };
 
 export interface WithdrawalStrategy {
   type: 'fixed' | 'percentage';

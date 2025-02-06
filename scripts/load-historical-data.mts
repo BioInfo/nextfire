@@ -1,6 +1,6 @@
 #!/usr/bin/env ts-node
 
-import { loadHistoricalData } from '../src/lib/database/dataLoader.js';
+import { loadHistoricalData } from '../src/lib/database/dataLoader';
 
 async function main() {
   try {

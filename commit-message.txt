@@ -1,0 +1,24 @@
+feat: add historical period comparison
+
+- Add market metrics (P/E ratios, dividend yields) to database schema
+- Create data loading script for Shiller dataset
+- Implement historical period comparison component
+- Add API route for fetching historical metrics
+- Update frontend to use API instead of direct DB access
+- Add documentation for session work and next tasks
+
+This commit adds the ability to compare different historical market periods,
+including metrics like stock returns, bond returns, inflation, P/E ratios,
+and dividend yields. The implementation uses an API-first approach to prevent
+client-side database access.
+
+Files changed:
+- prisma/schema.prisma (add market metrics columns)
+- src/lib/analysis/historicalMetrics.ts (period comparison logic)
+- src/components/analysis/PeriodComparison.tsx (new component)
+- src/app/api/analysis/route.ts (new API endpoint)
+- src/app/analysis/page.tsx (analysis page updates)
+- scripts/load-data.ts (data loading utility)
+- docs/session/2025-02-06.md (session documentation)
+- docs/projectRoadmap.md (progress updates)
+- docs/currentTask.md (next steps)
