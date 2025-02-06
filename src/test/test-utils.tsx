@@ -2,10 +2,25 @@ import React from 'react';
 import { render, RenderOptions, RenderResult } from '@testing-library/react';
 import { UserEvent } from '@testing-library/user-event';
 import userEvent from '@testing-library/user-event';
+import { ThemeProvider } from 'next-themes';
 
 interface CustomRenderResult extends RenderResult {
   user: UserEvent;
 }
+
+const Providers = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="light"
+      enableSystem={false}
+      disableTransitionOnChange
+      forcedTheme="light"
+    >
+      {children}
+    </ThemeProvider>
+  );
+};
 
 const customRender = (
   ui: React.ReactElement,
@@ -14,9 +29,9 @@ const customRender = (
   return {
     user: userEvent.setup(),
     ...render(ui, {
-      wrapper: ({ children }) => children,
+      wrapper: Providers,
       ...options,
-    }),
+    })
   };
 };
 
