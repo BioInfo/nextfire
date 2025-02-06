@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { SimulationChart } from '@/components/simulation/SimulationChart';
 import { useSimulation } from '@/lib/hooks/useSimulation';
 import type { SimulationResult } from '@/lib/simulation/types';
 
@@ -97,7 +98,12 @@ export function SimulationResults() {
             </Alert>
           )}
 
-          {result && <ResultsDisplay result={result} />}
+          {result && (
+            <div className="space-y-6">
+              <ResultsDisplay result={result} />
+              <SimulationChart result={result} />
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
