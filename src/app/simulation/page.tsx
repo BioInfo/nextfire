@@ -2,6 +2,7 @@
 
 import { PortfolioForm } from '@/components/portfolio/PortfolioForm';
 import { WithdrawalForm } from '@/components/withdrawal/WithdrawalForm';
+import { SimulationResults } from '@/components/simulation/SimulationResults';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { usePortfolioStore } from '@/lib/stores/portfolioStore';
 import { useWithdrawalStore } from '@/lib/stores/withdrawalStore';
@@ -41,11 +42,11 @@ export default function SimulationPage() {
           />
         </div>
 
-        {/* Simulation Results */}
+        {/* Configuration Summary */}
         <div>
           <Card>
             <CardHeader>
-              <CardTitle>Simulation Setup</CardTitle>
+              <CardTitle>Configuration Summary</CardTitle>
             </CardHeader>
             <CardContent>
               {portfolio || strategy ? (
@@ -101,6 +102,11 @@ export default function SimulationPage() {
               )}
             </CardContent>
           </Card>
+        </div>
+
+        {/* Simulation Results */}
+        <div>
+          <SimulationResults />
         </div>
       </div>
     </div>

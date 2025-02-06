@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/database/prisma';
 import type { PrismaClient } from '@prisma/client';
-import type { Portfolio, SimulationParams, SimulationResult, WithdrawalStrategy, YearlyResult } from './types';
+import type { Portfolio, SimulationParams, SimulationResult, WithdrawalStrategy, YearlyResult, CycleResult } from './types';
 
 export class SimulationEngine {
   private db: typeof prisma;
