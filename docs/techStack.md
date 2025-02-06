@@ -11,8 +11,9 @@ This document outlines the key technology choices and architectural decisions ma
 - **Key Features Used**:
   - App Router for improved routing and layouts
   - Server Components for optimal performance
-  - Built-in TypeScript support
+  - Built-in TypeScript support with project references
   - API Routes for backend functionality
+  - Client Components for interactive UI elements
 
 ### UI Components: shadcn/ui
 - **Justification**: Provides a collection of accessible, customizable components that follow modern design principles.
@@ -61,6 +62,12 @@ This document outlines the key technology choices and architectural decisions ma
 - Coverage reporting via Jest
 
 ## Development Tools
+
+### TypeScript Configuration
+- Project references for modular organization
+- Separate configs for app and scripts
+- ESM module support for Node.js scripts
+- Strict type checking enabled
 
 ### TypeScript Configuration
 - Strict mode enabled

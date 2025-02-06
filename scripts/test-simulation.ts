@@ -1,5 +1,5 @@
-import { SimulationEngine } from '../src/lib/simulation/engine';
-import type { SimulationParams } from '../src/lib/simulation/types';
+import { SimulationEngine } from '../src/lib/simulation/engine.js';
+import type { SimulationParams, YearlyResult } from '../src/lib/simulation/types.js';
 
 async function main() {
   const engine = new SimulationEngine();
@@ -34,7 +34,7 @@ async function main() {
     
     console.log('\nYearly Summary:');
     console.log('Year\tStart Balance\tWithdrawal\tEnd Balance');
-    result.yearlyResults.forEach(year => {
+    result.yearlyResults.forEach((year: YearlyResult) => {
       console.log(
         `${year.year}\t$${year.startingBalance.toLocaleString()}\t` +
         `$${year.withdrawal.toLocaleString()}\t$${year.endingBalance.toLocaleString()}`
